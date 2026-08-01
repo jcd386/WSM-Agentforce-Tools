@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>WSM_Require_Email_Or_User</fullName>
+    <active>true</active>
+    <description>A recipient with neither an email nor a user is silently unreachable. The flow would skip it with no error.</description>
+    <errorConditionFormula>AND(ISBLANK(Email__c), ISBLANK(User__c))</errorConditionFormula>
+    <errorMessage>Enter an email address, select a Salesforce user, or both. A recipient with neither would never be alerted.</errorMessage>
+</ValidationRule>

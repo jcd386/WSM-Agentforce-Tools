@@ -1,0 +1,67 @@
+<template>
+    <div class="wsm-results-card">
+        <div class="wsm-results-head">
+            <div>
+                <p class="wsm-price-label">List price</p>
+                <p class="wsm-price-value">{model.listPriceText} <span>per 100,000 credits</span></p>
+            </div>
+            <div>
+                <p class="wsm-price-label">Negotiated</p>
+                <p class="wsm-price-value">{model.negotiatedPriceText} <span>per 100,000 credits</span></p>
+            </div>
+            <div class="wsm-results-badge-wrap">
+                <template lwc:if={model.hasUplift}>
+                    <span class="wsm-price-badge wsm-price-badge_uplift">{model.upliftText}</span>
+                </template>
+                <span class={discountClass}>{discountCaption}</span>
+            </div>
+        </div>
+
+        <template lwc:if={hasResult}>
+            <div class="wsm-table-scroll">
+                <table class="wsm-result-table">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="wsm-col-basis">Basis</th>
+                            <th scope="col" class="wsm-num">Credits consumed</th>
+                            <th scope="col" class="wsm-num">$ at list</th>
+                            <th scope="col" class="wsm-num">$ negotiated</th>
+                            <th scope="col" class="wsm-num">You save</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={rows} for:item="row">
+                            <tr key={row.key}>
+                                <th scope="row" class="wsm-col-basis">
+                                    {row.label}
+                                    <template lwc:if={row.qualifier}>
+                                        <span class="wsm-qualifier">{row.qualifier}</span>
+                                    </template>
+                                </th>
+                                <td class="wsm-num wsm-num_credits">{row.creditsText}</td>
+                                <td class="wsm-num">{row.listText}</td>
+                                <td class="wsm-num">{row.negText}</td>
+                                <td class="wsm-num wsm-num_save">{row.savingsText}</td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="wsm-results-note">
+                Credits consumed are identical at both prices. Negotiating changes the dollar value
+                of a credit, never the number of credits an agent burns.
+            </p>
+        </template>
+
+        <template lwc:else>
+            <div class="wsm-empty">
+                <p class="wsm-empty-title">No published rate</p>
+                <p class="wsm-empty-body">
+                    Salesforce has not published a rate for this combination, so there is nothing to
+                    calculate. Pick a different event or environment.
+                </p>
+            </div>
+        </template>
+    </div>
+</template>

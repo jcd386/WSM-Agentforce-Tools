@@ -1,0 +1,9 @@
+.sfdx/
+.sf/
+.localdevserver/
+.vscode/
+.idea/
+*.log
+npm-debug.log*
+.DS_Store
+node_modules/

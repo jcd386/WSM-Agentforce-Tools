@@ -1,0 +1,139 @@
+<template>
+    <div class="wsm-ref-card">
+        <button class="wsm-ref-toggle" type="button" onclick={handleToggle}>
+            <lightning-icon icon-name={toggleIcon} size="x-small"></lightning-icon>
+            <span>{toggleLabel}</span>
+            <span class="wsm-ref-version">Flex Credits rate card &middot; effective {version}</span>
+        </button>
+
+        <template lwc:if={expanded}>
+            <div class="wsm-ref-body">
+                <section class="wsm-ref-section">
+                    <h3 class="wsm-ref-h">Token-based</h3>
+                    <p class="wsm-ref-sub">credits = (tokens &divide; {tokenBlock}) &times; multiplier</p>
+                    <div class="wsm-table-scroll">
+                        <table class="wsm-ref-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Prompt tier</th>
+                                    <th scope="col">LLM</th>
+                                    <th scope="col" class="wsm-num">Multiplier</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={promptRows} for:item="row">
+                                    <tr key={row.key}>
+                                        <th scope="row">{row.label}</th>
+                                        <td class="wsm-muted">{row.note}</td>
+                                        <td class="wsm-num">{row.multiplier}</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="wsm-ref-section">
+                    <h3 class="wsm-ref-h">Flat per event</h3>
+                    <p class="wsm-ref-sub">credits = fixed rate. Token count is irrelevant.</p>
+                    <div class="wsm-table-scroll">
+                        <table class="wsm-ref-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Event</th>
+                                    <th scope="col" class="wsm-num">Production</th>
+                                    <th scope="col" class="wsm-num">Sandbox</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={flatRows} for:item="row">
+                                    <tr key={row.key}>
+                                        <th scope="row">{row.label}</th>
+                                        <td class="wsm-num">{row.prod}</td>
+                                        <td class={row.sandboxClass}>{row.sandbox}</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="wsm-ref-section wsm-ref-warn">
+                    <h3 class="wsm-ref-h">Customer 360 Platform &mdash; not priced</h3>
+                    <template for:each={unpricedRows} for:item="row">
+                        <p key={row.key} class="wsm-ref-warn-line">
+                            <strong>{row.label}</strong> &mdash; TBA
+                        </p>
+                    </template>
+                    <p class="wsm-ref-sub">
+                        Salesforce has not published a rate for these. This calculator will not
+                        estimate them, and any figure you have seen elsewhere is a guess. Do not
+                        quote one to a customer.
+                    </p>
+                </section>
+
+                <section class="wsm-ref-section">
+                    <h3 class="wsm-ref-h">Data 360 &mdash; reference only</h3>
+                    <p class="wsm-ref-sub">
+                        Volume tiers reset monthly per usage type. Not calculated here.
+                    </p>
+                    <div class="wsm-table-scroll">
+                        <table class="wsm-ref-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Usage type</th>
+                                    <th scope="col">Unit</th>
+                                    <template for:each={data360HeaderCells} for:item="cell">
+                                        <th key={cell.key} scope="col" class="wsm-num">{cell.label}</th>
+                                    </template>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={data360Rows} for:item="row">
+                                    <tr key={row.key}>
+                                        <th scope="row">{row.label}</th>
+                                        <td class="wsm-muted">{row.unit}</td>
+                                        <template for:each={row.cells} for:item="cell">
+                                            <td key={cell.key} class="wsm-num">{cell.value}</td>
+                                        </template>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="wsm-ref-section">
+                    <h3 class="wsm-ref-h">Speech Foundations &mdash; reference only</h3>
+                    <div class="wsm-table-scroll">
+                        <table class="wsm-ref-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Usage type</th>
+                                    <th scope="col">Unit</th>
+                                    <th scope="col" class="wsm-num">Credits</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={speechRows} for:item="row">
+                                    <tr key={row.key}>
+                                        <th scope="row">{row.label}</th>
+                                        <td class="wsm-muted">{row.unit}</td>
+                                        <td class="wsm-num">{row.rate}</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <p class="wsm-ref-foot">
+                    List price {listPrice} per 100,000 credits.
+                    <a href={sourceUrl} target="_blank" rel="noopener noreferrer">Agentforce rates</a>
+                    &middot;
+                    <a href={llmUrl} target="_blank" rel="noopener noreferrer">Supported LLMs</a>
+                </p>
+            </div>
+        </template>
+    </div>
+</template>

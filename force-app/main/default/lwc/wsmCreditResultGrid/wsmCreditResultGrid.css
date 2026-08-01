@@ -1,0 +1,165 @@
+/* All class names are wsm- prefixed. LWC synthetic shadow DOM lets one.app
+   global styles leak in, so generic names like .card / .total / .active get
+   silently restyled by Salesforce. */
+
+.wsm-results-card {
+    background: var(--lwc-colorBackgroundAlt, #ffffff);
+    border: 1px solid var(--lwc-colorBorder, #e5e5e5);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 12px;
+}
+
+.wsm-results-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--lwc-colorBorder, #e5e5e5);
+    margin-bottom: 12px;
+}
+
+.wsm-results-badge-wrap {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.wsm-price-badge_uplift {
+    background: #e5e0f5;
+    color: #4a3a8c;
+}
+
+.wsm-price-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--lwc-colorTextWeak, #5c5c5c);
+}
+
+.wsm-price-value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--lwc-colorTextDefault, #181818);
+}
+
+.wsm-price-value span {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--lwc-colorTextWeak, #5c5c5c);
+}
+
+.wsm-price-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    background: #f3f3f3;
+    color: #444444;
+    transition: all 0.15s ease;
+}
+
+.wsm-price-badge_good {
+    background: #d7f5e0;
+    color: #12694a;
+}
+
+.wsm-price-badge_bad {
+    background: #fdd9d7;
+    color: #8c1c13;
+}
+
+.wsm-table-scroll {
+    overflow-x: auto;
+}
+
+.wsm-result-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+}
+
+.wsm-result-table th,
+.wsm-result-table td {
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--lwc-colorBorder, #e5e5e5);
+    white-space: nowrap;
+}
+
+.wsm-result-table thead th {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--lwc-colorTextWeak, #5c5c5c);
+    font-weight: 600;
+    border-bottom-width: 2px;
+}
+
+.wsm-result-table tbody tr:last-child th,
+.wsm-result-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.wsm-col-basis {
+    text-align: left;
+    font-weight: 500;
+    color: var(--lwc-colorTextDefault, #181818);
+}
+
+.wsm-num {
+    text-align: right;
+}
+
+.wsm-num_credits {
+    font-weight: 600;
+}
+
+.wsm-num_save {
+    color: #12694a;
+}
+
+.wsm-qualifier {
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 400;
+    color: var(--lwc-colorTextWeak, #5c5c5c);
+}
+
+.wsm-results-note {
+    margin-top: 8px;
+    font-size: 0.6875rem;
+    color: var(--lwc-colorTextWeak, #5c5c5c);
+    line-height: 1.4;
+}
+
+.wsm-empty {
+    padding: 24px 8px;
+    text-align: center;
+}
+
+.wsm-empty-title {
+    font-weight: 600;
+    color: var(--lwc-colorTextDefault, #181818);
+    margin-bottom: 4px;
+}
+
+.wsm-empty-body {
+    font-size: 0.8125rem;
+    color: var(--lwc-colorTextWeak, #5c5c5c);
+    max-width: 34rem;
+    margin: 0 auto;
+    line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+    .wsm-results-head {
+        gap: 12px;
+    }
+    .wsm-results-badge-wrap {
+        margin-left: 0;
+    }
+}

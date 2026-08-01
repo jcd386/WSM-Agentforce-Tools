@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Effective_Email__c</fullName>
+    <description>The address alerts are actually sent to: the linked user's email when a user is set, otherwise the typed address. A formula, not a stored copy, so a user who changes their Salesforce email is picked up immediately with nothing to re-save. The alert flow reads this field.</description>
+    <externalId>false</externalId>
+    <formula>IF(ISBLANK(User__c), Email__c, User__r.Email)</formula>
+    <formulaTreatBlanksAs>BlankAsBlank</formulaTreatBlanksAs>
+    <inlineHelpText>Derived. Set the Salesforce User or the Email field to change it.</inlineHelpText>
+    <label>Effective Email</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

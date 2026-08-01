@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Email__c</fullName>
+    <description>Address that receives Digital Wallet threshold alert emails. Leave blank if this recipient should only get the in-app notification.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Leave blank if this person should only get the in-app notification.</inlineHelpText>
+    <label>Email</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Email</type>
+    <unique>false</unique>
+</CustomField>

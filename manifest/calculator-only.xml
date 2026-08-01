@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Fallback for orgs where Salesforce has NOT provisioned Digital Wallet.
+  The alert flow references the managed sfdw consumption actions and the
+  sfdw__ConsumptionAlert Apex type; without Digital Wallet those do not exist and
+  the whole deploy fails atomically, taking the calculator down with it.
+  This manifest installs the pricing calculator alone, which has no prerequisites.
+-->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>wsmAgentforceRateCard</members>
+        <members>wsmCreditCalculator</members>
+        <members>wsmCreditResultGrid</members>
+        <members>wsmRateCardReference</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <version>64.0</version>
+</Package>

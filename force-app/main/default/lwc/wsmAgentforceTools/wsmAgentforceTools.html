@@ -1,0 +1,27 @@
+<template>
+    <div class="wsm-tools">
+        <lightning-tabset variant="scoped" active-tab-value={activeTab}>
+            <lightning-tab
+                label="Credit Calculator"
+                value="calculator"
+                onactive={handleTabActive}
+            >
+                <div class="wsm-tools-body">
+                    <c-wsm-credit-calculator></c-wsm-credit-calculator>
+                </div>
+            </lightning-tab>
+
+            <lightning-tab
+                label="Digital Wallet Alerts"
+                value="alerts"
+                onactive={handleTabActive}
+            >
+                <div class="wsm-tools-body">
+                    <template lwc:if={alertsLoaded}>
+                        <c-wsm-alert-settings></c-wsm-alert-settings>
+                    </template>
+                </div>
+            </lightning-tab>
+        </lightning-tabset>
+    </div>
+</template>

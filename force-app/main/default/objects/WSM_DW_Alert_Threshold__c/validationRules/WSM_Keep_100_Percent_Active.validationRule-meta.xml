@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>WSM_Keep_100_Percent_Active</fullName>
+    <active>true</active>
+    <description>The flow's overage check requires the fired threshold to equal exactly 100. It is the only path that lets a prepaid card alert again after an alert exists, so deactivating this record silently ends overage alerting.</description>
+    <errorConditionFormula>AND(ISPICKVAL(Trigger_Type__c, &quot;ThresholdPercent&quot;), Threshold_Value__c = 100, NOT(Is_Active__c))</errorConditionFormula>
+    <errorMessage>The 100% threshold must stay active. It is the only trigger for prepaid overage alerts — deactivating it would silently stop them.</errorMessage>
+</ValidationRule>

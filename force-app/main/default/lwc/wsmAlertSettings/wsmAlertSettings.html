@@ -1,0 +1,222 @@
+<template>
+    <div class="wsm-settings">
+        <template lwc:if={busy}>
+            <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+        </template>
+
+        <div class="wsm-bar">
+            <div class="wsm-bar-title">
+                <h2 class="wsm-title">Digital Wallet Alert Settings</h2>
+                <p class="wsm-sub">
+                    Read by the scheduled flow on its next daily run. One alert per card per run.
+                </p>
+            </div>
+            <template lwc:if={hasSenders}>
+                <lightning-combobox
+                    class="wsm-sender"
+                    label="Send emails from"
+                    placeholder="Select an address"
+                    options={senderOptions}
+                    value={senderAddress}
+                    onchange={handleSenderChange}
+                    disabled={busy}
+                ></lightning-combobox>
+            </template>
+            <lightning-button
+                class="wsm-refresh"
+                label="Refresh"
+                variant="neutral"
+                onclick={handleRefresh}
+                disabled={busy}
+            ></lightning-button>
+        </div>
+
+        <template lwc:if={hasError}>
+            <div class="wsm-alert wsm-alert_error" role="alert">
+                <lightning-icon icon-name="utility:error" size="xx-small"></lightning-icon>
+                <span>{errorMessage}</span>
+            </div>
+        </template>
+
+        <template lwc:if={showAdminFallbackWarning}>
+            <div class="wsm-alert wsm-alert_warn" role="status">
+                <lightning-icon icon-name="utility:warning" size="xx-small"></lightning-icon>
+                <span>
+                    No active recipient is linked to a Salesforce user, so in-app notifications fall
+                    back to every active system administrator.
+                </span>
+            </div>
+        </template>
+
+        <template lwc:if={senderRestricted}>
+            <div class="wsm-alert wsm-alert_warn" role="status">
+                <lightning-icon icon-name="utility:warning" size="xx-small"></lightning-icon>
+                <span>
+                    That address is not enabled for all profiles. The flow sends as the Automated
+                    Process User, so it may be rejected at send time.
+                </span>
+            </div>
+        </template>
+
+        <template lwc:if={showNoSenderWarning}>
+            <div class="wsm-alert wsm-alert_warn" role="status">
+                <lightning-icon icon-name="utility:warning" size="xx-small"></lightning-icon>
+                <span>Recipients have emails but no sender is selected, so no email will go out.</span>
+            </div>
+        </template>
+
+        <template lwc:if={noSenders}>
+            <div class="wsm-alert wsm-alert_warn" role="status">
+                <lightning-icon icon-name="utility:warning" size="xx-small"></lightning-icon>
+                <span>
+                    No verified organization-wide email addresses exist, so alert emails cannot be
+                    sent. Add one under Setup &rarr; Organization-Wide Addresses, then refresh.
+                    In-app notifications work without one.
+                </span>
+            </div>
+        </template>
+
+        <div class="wsm-split">
+            <div class="wsm-panel">
+                <div class="wsm-panel-head">
+                    <h3 class="wsm-panel-h">Recipients</h3>
+                    <span class="wsm-panel-meta">{audienceSummary}</span>
+                </div>
+
+                <lightning-datatable
+                    key-field="rowId"
+                    data={recipients}
+                    columns={recipientColumns}
+                    onsave={handleRecipientSave}
+                    onrowaction={handleRecipientRowAction}
+                    draft-values={emptyDrafts}
+                    hide-checkbox-column
+                ></lightning-datatable>
+
+                <template lwc:if={isEditing}>
+                    <div class="wsm-editor">
+                        <span class="wsm-editor-title">{editorTitle}</span>
+                        <template lwc:if={editingUser}>
+                            <div class="wsm-add-f">
+                                <lightning-record-picker
+                                    label="Salesforce user"
+                                    variant="label-hidden"
+                                    placeholder="Search users"
+                                    object-api-name="User"
+                                    filter={userPickerFilter}
+                                    onchange={handleEditorUserPicked}
+                                ></lightning-record-picker>
+                            </div>
+                        </template>
+                        <template lwc:if={editingEmail}>
+                            <lightning-input
+                                class="wsm-add-f"
+                                type="email"
+                                label="Email"
+                                variant="label-hidden"
+                                placeholder="Email"
+                                value={editing.email}
+                                onchange={handleEditorEmail}
+                            ></lightning-input>
+                        </template>
+                        <lightning-button
+                            label="Save"
+                            variant="brand"
+                            onclick={handleEditorSave}
+                            disabled={busy}
+                        ></lightning-button>
+                        <lightning-button
+                            label="Cancel"
+                            variant="neutral"
+                            onclick={handleEditorCancel}
+                        ></lightning-button>
+                    </div>
+                </template>
+
+                <div class="wsm-add">
+                    <lightning-input
+                        class="wsm-add-f"
+                        label="Name"
+                        variant="label-hidden"
+                        placeholder="Name"
+                        value={newName}
+                        onchange={handleNewName}
+                    ></lightning-input>
+                    <lightning-input
+                        class="wsm-add-f"
+                        type="email"
+                        label="Email"
+                        variant="label-hidden"
+                        placeholder="Email"
+                        value={newEmail}
+                        disabled={addEmailDisabled}
+                        onchange={handleNewEmail}
+                    ></lightning-input>
+                    <div class="wsm-add-f">
+                        <lightning-record-picker
+                            label="Salesforce user"
+                            variant="label-hidden"
+                            placeholder="Salesforce user"
+                            object-api-name="User"
+                            filter={userPickerFilter}
+                            onchange={handleUserPicked}
+                        ></lightning-record-picker>
+                    </div>
+                    <lightning-button
+                        label="Add"
+                        variant="brand"
+                        onclick={handleAddRecipient}
+                        disabled={addRecipientDisabled}
+                    ></lightning-button>
+                </div>
+                <p class="wsm-hint">
+                    Pick a Salesforce user and their address is used automatically &mdash; that is why
+                    Email is read-only in the table. For someone who is not a user, type an address
+                    instead. Use the row menu to change either. Adding, removing and row-menu changes
+                    save right away; in-table edits use the table's Save.
+                </p>
+            </div>
+
+            <div class="wsm-panel">
+                <div class="wsm-panel-head">
+                    <h3 class="wsm-panel-h">Thresholds</h3>
+                    <span class="wsm-panel-meta">percent consumed</span>
+                </div>
+
+                <lightning-datatable
+                    key-field="rowId"
+                    data={thresholds}
+                    columns={thresholdColumns}
+                    onsave={handleThresholdSave}
+                    onrowaction={handleThresholdRowAction}
+                    draft-values={emptyDrafts}
+                    hide-checkbox-column
+                ></lightning-datatable>
+
+                <div class="wsm-add">
+                    <lightning-input
+                        class="wsm-add-f"
+                        type="number"
+                        label="Threshold percent"
+                        variant="label-hidden"
+                        placeholder="Percent"
+                        min="1"
+                        max="100"
+                        value={newThreshold}
+                        onchange={handleNewThreshold}
+                    ></lightning-input>
+                    <lightning-button
+                        label="Add"
+                        variant="brand"
+                        onclick={handleAddThreshold}
+                        disabled={busy}
+                    ></lightning-button>
+                </div>
+                <p class="wsm-hint">
+                    The 100% threshold cannot be removed or deactivated &mdash; it is the only
+                    trigger for prepaid overage alerts.
+                </p>
+            </div>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,182 @@
+.wsm-calc {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* ---- top bar: billing shape + environment + reset on one line ---- */
+
+.wsm-bar {
+    display: flex;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.wsm-bar-modes {
+    display: flex;
+    flex: 1 1 30rem;
+    gap: 6px;
+}
+
+.wsm-seg {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1px;
+    padding: 6px 10px;
+    text-align: left;
+    background: #ffffff;
+    border: 2px solid var(--lwc-colorBorder, #e5e5e5);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.wsm-seg:hover {
+    border-color: #b0b0b0;
+}
+
+.wsm-seg_on {
+    border-color: #0176d3;
+    background: #eef4ff;
+}
+
+.wsm-seg-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--lwc-colorTextDefault, #181818);
+}
+
+.wsm-seg-detail {
+    font-size: 0.6875rem;
+    line-height: 1.2;
+    color: var(--lwc-colorTextWeak, #5c5c5c);
+}
+
+.wsm-env {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 2px;
+}
+
+.wsm-env-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--lwc-colorTextWeak, #5c5c5c);
+}
+
+.wsm-reset {
+    display: flex;
+    align-items: flex-end;
+}
+
+/* ---- two columns: inputs left, answer right ---- */
+
+.wsm-split {
+    display: grid;
+    grid-template-columns: minmax(19rem, 5fr) minmax(22rem, 7fr);
+    gap: 12px;
+    align-items: start;
+}
+
+.wsm-panel {
+    background: var(--lwc-colorBackgroundAlt, #ffffff);
+    border: 1px solid var(--lwc-colorBorder, #e5e5e5);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 12px;
+}
+
+.wsm-col-results {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.wsm-field {
+    margin-bottom: 10px;
+    transition: all 0.15s ease;
+}
+
+.wsm-field_off {
+    opacity: 0.45;
+}
+
+.wsm-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.wsm-field-off-note {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: #8c4b00;
+    margin-top: 2px;
+}
+
+.wsm-hint {
+    margin-top: 8px;
+    font-size: 0.6875rem;
+    line-height: 1.35;
+    color: var(--lwc-colorTextWeak, #5c5c5c);
+}
+
+/* Tighten the button-group radios so ten token choices stay compact. */
+.wsm-chips {
+    --slds-c-radio-button-spacing-inline-start: 0;
+}
+
+/* ---- live formula ---- */
+
+.wsm-formula {
+    background: #eef4ff;
+    border: 1px solid #c3d9f5;
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+.wsm-formula_warn {
+    background: #fff5e6;
+    border-color: #f5c98a;
+}
+
+.wsm-formula-text {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--lwc-colorTextDefault, #181818);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.35;
+}
+
+@media (max-width: 1024px) {
+    .wsm-split {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .wsm-bar-modes {
+        flex-wrap: wrap;
+    }
+    .wsm-pair {
+        grid-template-columns: 1fr;
+    }
+}
+
+.wsm-provenance {
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    color: var(--lwc-colorTextWeak, #5c5c5c);
+    padding: 0 2px;
+}
+
+.wsm-provenance a {
+    color: #0b5cab;
+}

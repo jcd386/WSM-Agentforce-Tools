@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customSettingsType>Hierarchy</customSettingsType>
+    <description>Org-level configuration for the Digital Wallet alert flow. Hierarchy rather than a record so the flow can read it through $Setup without a Get Records element, which keeps the paused-interview payload small.</description>
+    <enableFeeds>false</enableFeeds>
+    <label>WSM DW Alert Config</label>
+    <visibility>Public</visibility>
+</CustomObject>

@@ -1,0 +1,941 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Retrieves data on Digital Wallet consumption cards and alerts.</description>
+        <name>Compute_Consumption</name>
+        <label>Compute Consumption</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>computeConsumption</actionName>
+        <actionType>computeConsumption</actionType>
+        <connector>
+            <targetReference>Check_for_Cards</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <nameSegment>computeConsumption</nameSegment>
+        <offset>0</offset>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <actionCalls>
+        <description>Creates an alert and sends a notification to the provided list of users.</description>
+        <name>Create_Alert_and_Notify</name>
+        <label>Create Alert and Notify</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>createConsumptionAlert</actionName>
+        <actionType>createConsumptionAlert</actionType>
+        <connector>
+            <targetReference>Check_Email_Recipients</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>cardDefinitionDeveloperName</name>
+            <value>
+                <elementReference>Cards.cardDefinitionDeveloperName</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>businessEnvType</name>
+            <value>
+                <elementReference>Cards.businessEnvType</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>usageModel</name>
+            <value>
+                <elementReference>Cards.usageModel</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>alertTriggerType</name>
+            <value>
+                <elementReference>AlertTriggerType</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>alertTriggerValue</name>
+            <value>
+                <elementReference>Thresholds</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>sendNotification</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientIds</name>
+            <value>
+                <elementReference>NotifyUserIds</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>createConsumptionAlert</nameSegment>
+        <offset>0</offset>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <actionCalls>
+        <description>Emails the alert to the addresses on active Digital Wallet Alert Recipient records. This covers people who need the alert but are not Salesforce users, since the Create Consumption Alert action can only notify User records. Manage the list on the WSM Agentforce Tools tab.</description>
+        <name>Send_Email_Alert</name>
+        <label>Send Email Alert</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <connector>
+            <targetReference>Thresholds</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Thresholds</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailAddressesArray</name>
+            <value>
+                <elementReference>Collect_Alert_Emails</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <elementReference>AlertEmailSubject</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>Alert_Email_Body</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>sendRichBody</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>senderType</name>
+            <value>
+                <stringValue>OrgWideEmailAddress</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>senderAddress</name>
+            <value>
+                <elementReference>$Setup.WSM_DW_Alert_Config__c.Sender_Address__c</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+        <offset>0</offset>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <description>Load the configured percent thresholds for this card. Values come from active Digital Wallet Alert Threshold records, not from this flow. Adding an item to a collection with Add appends every element of the source collection.</description>
+        <name>Assign_Thresholds</name>
+        <label>Assign Thresholds</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>ThresholdValues</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Collect_Percent_Thresholds</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Find_Exceeded_Thresholds</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Set the alert trigger type to be percent consumed.</description>
+        <name>Assign_Type_Percent</name>
+        <label>Assign Type (Percent)</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>AlertTriggerType</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>AlertTriggerType_ThresholdPercent</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Assign_Thresholds</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Set the alert trigger type to be units consumed.</description>
+        <name>Assign_Type_Units</name>
+        <label>Assign Type (Units)</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>AlertTriggerType</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>AlertTriggerType_ThresholdUnits</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Find_Exceeded_Thresholds</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Clear the ThresholdValues collection. Each iteration should set its own thresholds.</description>
+        <name>Clear_Threshold_Values</name>
+        <label>Clear Threshold Values</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>ThresholdValues</assignToReference>
+            <operator>RemoveAll</operator>
+            <value>
+                <elementReference>ThresholdValues</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_Card_Conditions</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Fallback audience when no active recipient record points at a Salesforce user. Keeps alerts from going silent, and guarantees the Create Consumption Alert action never receives an empty recipient list.</description>
+        <name>Set_Notify_Users_From_Admins</name>
+        <label>Set Notify Users From Admins</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>NotifyUserIds</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Collect_User_IDs</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Cards</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Use the recipient records as the notification audience. This is the configured path.</description>
+        <name>Set_Notify_Users_From_Records</name>
+        <label>Set Notify Users From Records</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>NotifyUserIds</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Collect_Recipient_User_IDs</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Cards</targetReference>
+        </connector>
+    </assignments>
+    <collectionProcessors>
+        <description>Keeps only percent-based thresholds that have a value. Units thresholds are deliberately excluded — the units path never loads thresholds, so a units card cannot alert with percent-shaped numbers.</description>
+        <name>Filter_Percent_Thresholds</name>
+        <elementSubtype>FilterCollectionProcessor</elementSubtype>
+        <label>Filter Percent Thresholds</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNextValueToReference>currentItem_Filter_Percent_Thresholds</assignNextValueToReference>
+        <collectionProcessorType>FilterCollectionProcessor</collectionProcessorType>
+        <collectionReference>Get_Alert_Thresholds</collectionReference>
+        <conditionLogic>and</conditionLogic>
+        <conditions>
+            <leftValueReference>currentItem_Filter_Percent_Thresholds.Trigger_Type__c</leftValueReference>
+            <operator>EqualTo</operator>
+            <rightValue>
+                <elementReference>AlertTriggerType_ThresholdPercent</elementReference>
+            </rightValue>
+        </conditions>
+        <conditions>
+            <leftValueReference>currentItem_Filter_Percent_Thresholds.Threshold_Value__c</leftValueReference>
+            <operator>IsNull</operator>
+            <rightValue>
+                <booleanValue>false</booleanValue>
+            </rightValue>
+        </conditions>
+        <connector>
+            <targetReference>Collect_Percent_Thresholds</targetReference>
+        </connector>
+    </collectionProcessors>
+    <collectionProcessors>
+        <description>Keeps recipient records that resolve to an email address. Effective Email is a formula: the linked user&apos;s address when a user is set, otherwise the typed one.</description>
+        <name>Filter_Recipients_With_Email</name>
+        <elementSubtype>FilterCollectionProcessor</elementSubtype>
+        <label>Filter Recipients With Email</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNextValueToReference>currentItem_Filter_Recipients_With_Email</assignNextValueToReference>
+        <collectionProcessorType>FilterCollectionProcessor</collectionProcessorType>
+        <collectionReference>Get_Alert_Recipients</collectionReference>
+        <conditionLogic>and</conditionLogic>
+        <conditions>
+            <leftValueReference>currentItem_Filter_Recipients_With_Email.Effective_Email__c</leftValueReference>
+            <operator>IsNull</operator>
+            <rightValue>
+                <booleanValue>false</booleanValue>
+            </rightValue>
+        </conditions>
+        <connector>
+            <targetReference>Collect_Alert_Emails</targetReference>
+        </connector>
+    </collectionProcessors>
+    <collectionProcessors>
+        <description>Keeps recipient records that point at a Salesforce user. Those users get the in-app notification.</description>
+        <name>Filter_Recipients_With_User</name>
+        <elementSubtype>FilterCollectionProcessor</elementSubtype>
+        <label>Filter Recipients With User</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNextValueToReference>currentItem_Filter_Recipients_With_User</assignNextValueToReference>
+        <collectionProcessorType>FilterCollectionProcessor</collectionProcessorType>
+        <collectionReference>Get_Alert_Recipients</collectionReference>
+        <conditionLogic>and</conditionLogic>
+        <conditions>
+            <leftValueReference>currentItem_Filter_Recipients_With_User.User__c</leftValueReference>
+            <operator>IsNull</operator>
+            <rightValue>
+                <booleanValue>false</booleanValue>
+            </rightValue>
+        </conditions>
+        <connector>
+            <targetReference>Collect_Recipient_User_IDs</targetReference>
+        </connector>
+    </collectionProcessors>
+    <collectionProcessors>
+        <description>Find existing alerts whose value is equal to or higher than the current threshold value in the loop.</description>
+        <name>Find_Equal_or_Higher_Alerts</name>
+        <elementSubtype>FilterCollectionProcessor</elementSubtype>
+        <label>Find Equal or Higher Alerts</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNextValueToReference>currentItem_Find_Equal_or_Higher_Alerts</assignNextValueToReference>
+        <collectionProcessorType>FilterCollectionProcessor</collectionProcessorType>
+        <collectionReference>Cards.consumptionAlerts</collectionReference>
+        <conditionLogic>and</conditionLogic>
+        <conditions>
+            <leftValueReference>currentItem_Find_Equal_or_Higher_Alerts.alertTriggerType</leftValueReference>
+            <operator>EqualTo</operator>
+            <rightValue>
+                <elementReference>AlertTriggerType</elementReference>
+            </rightValue>
+        </conditions>
+        <conditions>
+            <leftValueReference>currentItem_Find_Equal_or_Higher_Alerts.alertTriggerValue</leftValueReference>
+            <operator>GreaterThanOrEqualTo</operator>
+            <rightValue>
+                <elementReference>Thresholds</elementReference>
+            </rightValue>
+        </conditions>
+        <connector>
+            <targetReference>Check_Alert_Conditions</targetReference>
+        </connector>
+    </collectionProcessors>
+    <collectionProcessors>
+        <description>Find thresholds that the card&apos;s consumption value has exceeded.</description>
+        <name>Find_Exceeded_Thresholds</name>
+        <elementSubtype>FilterCollectionProcessor</elementSubtype>
+        <label>Find Exceeded Thresholds</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNextValueToReference>currentItem_Find_Exceeded_Thresholds</assignNextValueToReference>
+        <collectionProcessorType>FilterCollectionProcessor</collectionProcessorType>
+        <collectionReference>ThresholdValues</collectionReference>
+        <conditionLogic>and</conditionLogic>
+        <conditions>
+            <leftValueReference>currentItem_Find_Exceeded_Thresholds</leftValueReference>
+            <operator>LessThanOrEqualTo</operator>
+            <rightValue>
+                <elementReference>CardConsumption</elementReference>
+            </rightValue>
+        </conditions>
+        <connector>
+            <targetReference>Sort_Thresholds_Descending</targetReference>
+        </connector>
+    </collectionProcessors>
+    <collectionProcessors>
+        <description>DO NOT REWIRE. A Collection Sort mutates the collection it references rather than producing its own output, so this element sorts Find Exceeded Thresholds in place and the limit of 1 truncates it to the single highest exceeded threshold. That is why the Thresholds loop below iterates Find Exceeded Thresholds and not this element — a Sort is not a referenceable resource and pointing the loop at it fails deploy. Consequence: at most one alert per card per run. Removing the limit would fire one alert, one email and one one-minute pause per crossed threshold.</description>
+        <name>Sort_Thresholds_Descending</name>
+        <elementSubtype>SortCollectionProcessor</elementSubtype>
+        <label>Sort Thresholds Descending</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionProcessorType>SortCollectionProcessor</collectionProcessorType>
+        <collectionReference>Find_Exceeded_Thresholds</collectionReference>
+        <connector>
+            <targetReference>Thresholds</targetReference>
+        </connector>
+        <limit>1</limit>
+        <sortOptions>
+            <doesPutEmptyStringAndNullFirst>false</doesPutEmptyStringAndNullFirst>
+            <sortOrder>Desc</sortOrder>
+        </sortOptions>
+    </collectionProcessors>
+    <constants>
+        <description>Constant &quot;ThresholdPercent&quot;. A type of alert that fires when a consumption card&apos;s percentage consumed exceeds a provided threshold. Note that some cards don&apos;t support percentage consumed.</description>
+        <name>AlertTriggerType_ThresholdPercent</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>ThresholdPercent</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <description>Constant &quot;ThresholdUnits&quot;. A type of alert that fires when a consumption card&apos;s units consumed exceeds a provided threshold.</description>
+        <name>AlertTriggerType_ThresholdUnits</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>ThresholdUnits</stringValue>
+        </value>
+    </constants>
+    <constants>
+        <description>Constant &quot;PrePurchased&quot;. The value of the &quot;usageModel&quot; field for prepaid cards.</description>
+        <name>UsageModel_PrePurchased</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>PrePurchased</stringValue>
+        </value>
+    </constants>
+    <decisions>
+        <description>Determines if an alert is created for a consumption card when its usage exceeds the provided threshold. When a card exceeds a threshold, alerts are only created if the card has either gone into overage or the card doesn&apos;t have any existing alerts with an equal or higher threshold value.</description>
+        <name>Check_Alert_Conditions</name>
+        <label>Check Alert Conditions</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Thresholds</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Alert Already Exists</defaultConnectorLabel>
+        <rules>
+            <name>Above_Existing_Alerts</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>Find_Equal_or_Higher_Alerts</leftValueReference>
+                <operator>IsEmpty</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>IsOverage</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Wait_Before_Create_Alert</targetReference>
+            </connector>
+            <label>Above Existing Alerts</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Checks conditions that determine which threshold value and type is used for this card.</description>
+        <name>Check_Card_Conditions</name>
+        <label>Check Card Conditions</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Assign_Type_Units</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Units Threshold</defaultConnectorLabel>
+        <rules>
+            <name>Percentage_Threshold</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>PercentConsumed</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Type_Percent</targetReference>
+            </connector>
+            <label>Percentage Threshold</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Only send the email alert when there is both an active email recipient and a configured org-wide sender. Sending with an empty recipient collection or a blank sender would fault the flow. Both are set on the WSM Agentforce Tools tab. Calling Send Email with an empty recipient collection would fault the flow, so this gate keeps the automation safe when no custom metadata records exist.</description>
+        <name>Check_Email_Recipients</name>
+        <label>Check Email Recipients</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Thresholds</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Email Recipients</defaultConnectorLabel>
+        <rules>
+            <name>Has_Email_Recipients</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Collect_Alert_Emails</leftValueReference>
+                <operator>IsEmpty</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Setup.WSM_DW_Alert_Config__c.Sender_Address__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Send_Email_Alert</targetReference>
+            </connector>
+            <label>Has Email Recipients</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Checks if any consumption cards exist. Exit the flow if false.</description>
+        <name>Check_for_Cards</name>
+        <label>Check for Cards</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No Cards</defaultConnectorLabel>
+        <rules>
+            <name>Has_Cards</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Compute_Consumption.cards</leftValueReference>
+                <operator>IsEmpty</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Alert_Thresholds</targetReference>
+            </connector>
+            <label>Has Cards</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Use the configured recipient users when any exist, otherwise fall back to active system administrators. The fallback exists so that clearing the recipient list can never silence the alerts, and so the Create Consumption Alert action is never handed an empty recipient collection.</description>
+        <name>Check_Notify_Users</name>
+        <label>Check Notify Users</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Get_Sys_Admin_Profile</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Recipient Users</defaultConnectorLabel>
+        <rules>
+            <name>Has_Recipient_Users</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Collect_Recipient_User_IDs</leftValueReference>
+                <operator>IsEmpty</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Notify_Users_From_Records</targetReference>
+            </connector>
+            <label>Has Recipient Users</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <description>Subject line for the alert email. Names the card and the threshold that was crossed.</description>
+        <name>AlertEmailSubject</name>
+        <dataType>String</dataType>
+        <expression>&quot;Digital Wallet alert: &quot; &amp; {!Cards.cardDefinitionDeveloperName} &amp; &quot; has reached &quot; &amp; TEXT(ROUND({!Thresholds}, 0)) &amp; IF({!AlertTriggerType} = {!AlertTriggerType_ThresholdPercent}, &quot;% consumed&quot;, &quot; units consumed&quot;)</expression>
+    </formulas>
+    <formulas>
+        <description>The card’s consumption value based on the alert trigger type. This result is compared to each threshold to determine whether an alert trigger has been met.</description>
+        <name>CardConsumption</name>
+        <dataType>Number</dataType>
+        <expression>IF({!AlertTriggerType}={!AlertTriggerType_ThresholdPercent}, {!PercentConsumed}, IF({!AlertTriggerType}={!AlertTriggerType_ThresholdUnits}, {!Cards.unitsConsumed}, null))</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <description>Describes whether the current element in the thresholds&apos; loop indicates a consumption overage scenario.</description>
+        <name>IsOverage</name>
+        <dataType>Boolean</dataType>
+        <expression>AND({!Thresholds}==100, {!AlertTriggerType}=={!AlertTriggerType_ThresholdPercent}, {!Cards.usageModel}=={!UsageModel_PrePurchased})</expression>
+    </formulas>
+    <formulas>
+        <description>The percent consumed for a given consumption card.</description>
+        <name>PercentConsumed</name>
+        <dataType>Number</dataType>
+        <expression>IF({!Cards.totalEntitlement} &gt; 0, 100*{!Cards.unitsConsumed}/{!Cards.totalEntitlement}, null)</expression>
+        <scale>2</scale>
+    </formulas>
+    <interviewLabel>WSM - Digital Wallet Alerts {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>WSM - Digital Wallet Alerts</label>
+    <loops>
+        <description>Loops over the consumption cards.</description>
+        <name>Cards</name>
+        <label>Cards</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>Compute_Consumption.cards</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Clear_Threshold_Values</targetReference>
+        </nextValueConnector>
+    </loops>
+    <loops>
+        <description>Loops over the exceeded thresholds.</description>
+        <name>Thresholds</name>
+        <label>Thresholds</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>Find_Exceeded_Thresholds</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Find_Equal_or_Higher_Alerts</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Cards</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Gets the active alert recipients. Edit these records on the WSM Agentforce Tools tab rather than editing this flow. Queried fields are kept minimal because every variable is serialized into the paused-interview payload at each Wait.</description>
+        <name>Get_Alert_Recipients</name>
+        <label>Get Alert Recipients</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Filter_Recipients_With_User</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Is_Active__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>WSM_DW_Alert_Recipient__c</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Email__c</queriedFields>
+        <queriedFields>Effective_Email__c</queriedFields>
+        <queriedFields>User__c</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Gets the active alert thresholds. Runs once before the card loop, never inside it, so no query lands in a resumed-interview transaction.</description>
+        <name>Get_Alert_Thresholds</name>
+        <label>Get Alert Thresholds</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Filter_Percent_Thresholds</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Is_Active__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>WSM_DW_Alert_Threshold__c</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Threshold_Value__c</queriedFields>
+        <queriedFields>Trigger_Type__c</queriedFields>
+        <sortField>Threshold_Value__c</sortField>
+        <sortOrder>Asc</sortOrder>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Gets the profile with the name &quot;System Administrator.&quot;</description>
+        <name>Get_Sys_Admin_Profile</name>
+        <label>Get System Administrator Profile</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Users</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Name</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>System Administrator</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Profile</object>
+        <queriedFields>Id</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Gets all active users with the System Administrator profile in this org. Inactive users are excluded so that deactivated admins are never passed as notification recipients.</description>
+        <name>Get_Users</name>
+        <label>Get Users</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Collect_User_IDs</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ProfileId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Sys_Admin_Profile.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>IsActive</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <limit>
+            <numberValue>1000.0</numberValue>
+        </limit>
+        <object>User</object>
+        <queriedFields>Id</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Wait_Before_Compute_Consumption</targetReference>
+        </connector>
+        <schedule>
+            <dayOfMonthToRun>0</dayOfMonthToRun>
+            <frequency>Daily</frequency>
+            <frequencyNumber>0</frequencyNumber>
+            <startDate>2024-09-01</startDate>
+            <startTime>00:00:00.000Z</startTime>
+        </schedule>
+        <triggerType>Scheduled</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <description>Body of the alert email sent to non-user recipients.</description>
+        <name>Alert_Email_Body</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
+        <text>&lt;p&gt;A Salesforce Digital Wallet consumption threshold has been crossed in &lt;b&gt;{!$Organization.Name}&lt;/b&gt;.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;b&gt;Card:&lt;/b&gt; {!Cards.cardDefinitionDeveloperName}&lt;/li&gt;
+&lt;li&gt;&lt;b&gt;Environment:&lt;/b&gt; {!Cards.businessEnvType}&lt;/li&gt;
+&lt;li&gt;&lt;b&gt;Usage model:&lt;/b&gt; {!Cards.usageModel}&lt;/li&gt;
+&lt;li&gt;&lt;b&gt;Consumed:&lt;/b&gt; {!Cards.unitsConsumed} of {!Cards.totalEntitlement}&lt;/li&gt;
+&lt;li&gt;&lt;b&gt;Threshold crossed:&lt;/b&gt; {!Thresholds}&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Review the balance in Setup under Digital Wallet.&lt;/p&gt;
+&lt;p&gt;&lt;i&gt;Sent by the WSM - Digital Wallet Alerts flow. To change who receives this email or which levels trigger it, open the WSM Agentforce Tools tab and edit the Digital Wallet Alerts settings.&lt;/i&gt;&lt;/p&gt;</text>
+    </textTemplates>
+    <transforms>
+        <description>Collects email addresses from the active recipient records that have one.</description>
+        <name>Collect_Alert_Emails</name>
+        <label>Collect Alert Emails</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_Notify_Users</targetReference>
+        </connector>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <scale>0</scale>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+        <transformValues>
+            <transformValueActions>
+                <transformType>Map</transformType>
+                <value>
+                    <elementReference>Filter_Recipients_With_Email[$EachItem].Effective_Email__c</elementReference>
+                </value>
+            </transformValueActions>
+        </transformValues>
+    </transforms>
+    <transforms>
+        <description>Collects the configured percent threshold values into a Number collection.</description>
+        <name>Collect_Percent_Thresholds</name>
+        <label>Collect Percent Thresholds</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Alert_Recipients</targetReference>
+        </connector>
+        <dataType>Number</dataType>
+        <isCollection>true</isCollection>
+        <scale>2</scale>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+        <transformValues>
+            <transformValueActions>
+                <transformType>Map</transformType>
+                <value>
+                    <elementReference>Filter_Percent_Thresholds[$EachItem].Threshold_Value__c</elementReference>
+                </value>
+            </transformValueActions>
+        </transformValues>
+    </transforms>
+    <transforms>
+        <description>Collects User IDs from the active recipient records that point at a Salesforce user.</description>
+        <name>Collect_Recipient_User_IDs</name>
+        <label>Collect Recipient User IDs</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Filter_Recipients_With_Email</targetReference>
+        </connector>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <scale>0</scale>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+        <transformValues>
+            <transformValueActions>
+                <transformType>Map</transformType>
+                <value>
+                    <elementReference>Filter_Recipients_With_User[$EachItem].User__c</elementReference>
+                </value>
+            </transformValueActions>
+        </transformValues>
+    </transforms>
+    <transforms>
+        <description>Collects User IDs from the system administrator fallback lookup.</description>
+        <name>Collect_User_IDs</name>
+        <label>Collect User IDs</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Set_Notify_Users_From_Admins</targetReference>
+        </connector>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <scale>0</scale>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+        <transformValues>
+            <transformValueActions>
+                <transformType>Map</transformType>
+                <value>
+                    <elementReference>Get_Users[$EachItem].Id</elementReference>
+                </value>
+            </transformValueActions>
+        </transformValues>
+    </transforms>
+    <variables>
+        <description>The type of alert trigger being processed.</description>
+        <name>AlertTriggerType</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>currentItem_Filter_Percent_Thresholds</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>WSM_DW_Alert_Threshold__c</objectType>
+    </variables>
+    <variables>
+        <name>currentItem_Filter_Recipients_With_Email</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>WSM_DW_Alert_Recipient__c</objectType>
+    </variables>
+    <variables>
+        <name>currentItem_Filter_Recipients_With_User</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>WSM_DW_Alert_Recipient__c</objectType>
+    </variables>
+    <variables>
+        <name>currentItem_Find_Equal_or_Higher_Alerts</name>
+        <apexClass>sfdw__ConsumptionAlert</apexClass>
+        <dataType>Apex</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>currentItem_Find_Exceeded_Thresholds</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>2</scale>
+    </variables>
+    <variables>
+        <description>The resolved in-app notification audience: configured recipient users, or active system administrators when none are configured.</description>
+        <name>NotifyUserIds</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>The threshold values to trigger the alert on. The values in this collection can be customized for each consumption card.</description>
+        <name>ThresholdValues</name>
+        <dataType>Number</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>2</scale>
+    </variables>
+    <waits>
+        <description>Pauses the flow for one minute to commit the current transaction. Required before calling the Compute Consumption action because it makes a callout.</description>
+        <name>Wait_Before_Compute_Consumption</name>
+        <elementSubtype>WaitDuration</elementSubtype>
+        <label>Wait</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Path</defaultConnectorLabel>
+        <waitEvents>
+            <conditionLogic>and</conditionLogic>
+            <connector>
+                <targetReference>Compute_Consumption</targetReference>
+            </connector>
+            <label>el_0</label>
+            <offset>1</offset>
+            <offsetUnit>Minutes</offsetUnit>
+        </waitEvents>
+    </waits>
+    <waits>
+        <description>Pauses the flow for one minute to commit the current transaction. Required before calling the Create Consumption Alert action because it makes a callout.</description>
+        <name>Wait_Before_Create_Alert</name>
+        <elementSubtype>WaitDuration</elementSubtype>
+        <label>Wait</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Path</defaultConnectorLabel>
+        <waitEvents>
+            <conditionLogic>and</conditionLogic>
+            <connector>
+                <targetReference>Create_Alert_and_Notify</targetReference>
+            </connector>
+            <label>el_1</label>
+            <offset>1</offset>
+            <offsetUnit>Minutes</offsetUnit>
+        </waitEvents>
+    </waits>
+</Flow>

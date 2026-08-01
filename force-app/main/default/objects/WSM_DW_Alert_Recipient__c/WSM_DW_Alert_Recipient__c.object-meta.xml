@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Who gets notified when a Salesforce Digital Wallet consumption threshold is crossed. Read by the WSM - Digital Wallet Alerts scheduled flow. A record with a Salesforce User gets an in-app notification; a record with an email address gets an email; a record with both gets both.</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableLicensing>false</enableLicensing>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <label>Digital Wallet Alert Recipient</label>
+    <nameField>
+        <label>Recipient Name</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Digital Wallet Alert Recipients</pluralLabel>
+    <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

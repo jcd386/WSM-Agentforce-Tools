@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Consumption levels that trigger a Digital Wallet alert. Read by the WSM - Digital Wallet Alerts scheduled flow. Only one alert fires per card per run — the highest threshold the card has crossed — so adding rows changes which level is reported, not how many alerts are sent.</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableLicensing>false</enableLicensing>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <label>Digital Wallet Alert Threshold</label>
+    <nameField>
+        <displayFormat>DWT-{0000}</displayFormat>
+        <label>Threshold Number</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Digital Wallet Alert Thresholds</pluralLabel>
+    <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

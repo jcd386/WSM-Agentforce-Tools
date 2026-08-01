@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Is_Active__c</fullName>
+    <defaultValue>true</defaultValue>
+    <description>Uncheck to stop this threshold firing without deleting the record. The 100 percent threshold cannot be deactivated — it drives prepaid overage alerts.</description>
+    <inlineHelpText>Uncheck to disable this threshold without deleting it.</inlineHelpText>
+    <label>Active</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

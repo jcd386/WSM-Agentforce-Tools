@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>WSM_Percent_Between_1_And_100</fullName>
+    <active>true</active>
+    <description>A percent threshold above 100 would out-rank the 100 record in the descending sort and defeat the overage check, which compares the fired threshold against exactly 100.</description>
+    <errorConditionFormula>AND(ISPICKVAL(Trigger_Type__c, &quot;ThresholdPercent&quot;), OR(Threshold_Value__c &lt;= 0, Threshold_Value__c &gt; 100))</errorConditionFormula>
+    <errorMessage>A percent threshold must be between 1 and 100. Use the Units consumed trigger type for raw unit counts.</errorMessage>
+</ValidationRule>

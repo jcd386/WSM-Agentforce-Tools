@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>User__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Salesforce user who receives the in-app bell notification. Leave blank for external recipients who only need the email.</description>
+    <inlineHelpText>Leave blank for external people who are not Salesforce users.</inlineHelpText>
+    <label>Salesforce User</label>
+    <referenceTo>User</referenceTo>
+    <relationshipLabel>Digital Wallet Alert Recipients</relationshipLabel>
+    <relationshipName>WSM_DW_Alert_Recipients</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Sender_Address__c</fullName>
+    <description>The org-wide email address the Digital Wallet alert emails are sent from. Must match a verified Organization-Wide Email Address. Blank means no alert emails are sent; in-app notifications are unaffected.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Set this from the Digital Wallet Alerts tab on the WSM Agentforce Tools page.</inlineHelpText>
+    <label>Sender Address</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>
