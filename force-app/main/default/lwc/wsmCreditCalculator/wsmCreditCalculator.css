@@ -13,10 +13,17 @@
     gap: 8px;
 }
 
+.wsm-modes-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1 1 30rem;
+}
+
 .wsm-bar-modes {
     display: flex;
-    flex: 1 1 30rem;
     gap: 6px;
+    flex: 1 1 auto;
 }
 
 .wsm-seg {
@@ -63,7 +70,7 @@
     gap: 2px;
 }
 
-.wsm-env-label {
+.wsm-mini-label {
     display: flex;
     align-items: center;
     gap: 4px;
@@ -136,10 +143,17 @@
 /* ---- live formula ---- */
 
 .wsm-formula {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     background: #eef4ff;
     border: 1px solid #c3d9f5;
     border-radius: 8px;
     padding: 8px 12px;
+}
+
+.wsm-formula-help {
+    margin-left: auto;
 }
 
 .wsm-formula_warn {

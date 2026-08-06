@@ -24,18 +24,24 @@ const COMMIT_DELAY_MS = 250;
 const MODES = [
     {
         value: 'token',
-        label: 'Token-based (prompt)',
-        detail: 'credits = tokens ÷ 2,000 × multiplier'
+        label: 'Pay by size (prompts)',
+        detail: 'credits = tokens ÷ 2,000 × multiplier',
+        title:
+            'For prompts. The bigger the text, the more it costs: count the tokens, divide by 2,000, then multiply by the tier number.'
     },
     {
         value: 'flat',
-        label: 'Flat per event',
-        detail: 'credits = fixed rate · tokens don’t matter'
+        label: 'Fixed price per event',
+        detail: 'same price every time · size does not matter',
+        title:
+            'For agent actions. Every event costs the same fixed number of credits, whether it is tiny or huge.'
     },
     {
         value: 'blended',
-        label: 'Blended request',
-        detail: '1 prompt + N agent actions'
+        label: 'Both together',
+        detail: '1 prompt + agent actions, added up',
+        title:
+            'One real request is often a prompt plus a few agent actions. This adds the two costs together.'
     }
 ];
 
@@ -107,28 +113,84 @@ export default class WsmCreditCalculator extends LightningElement {
         ];
     }
 
+    get modeHelp() {
+        return (
+            'Salesforce charges for agents in two different ways, and mixing them up is the ' +
+            'classic mistake. Prompts are pay-by-size: count the tokens, divide by 2,000, ' +
+            'multiply by the tier number. Agent actions are fixed-price: the same number of ' +
+            'credits every time, even for a huge job. Pick "Both together" to price a request ' +
+            'that uses a prompt plus some actions.'
+        );
+    }
+
     /**
-     * Built from FLAT_EVENTS rather than written by hand, so the tooltip cannot
-     * drift away from the rates the calculator actually uses when Salesforce
-     * republishes the rate card.
+     * The generated tooltips are built from FLAT_EVENTS / PROMPT_TIERS rather
+     * than written by hand, so they cannot drift away from the rates the
+     * calculator actually uses when Salesforce republishes the rate card.
      */
     get environmentHelp() {
         const deltas = FLAT_EVENTS.map((e) =>
             e.sandbox === null || e.sandbox === undefined
-                ? `${e.label} ${e.prod} (no published sandbox rate)`
+                ? `${e.label} ${e.prod} (no sandbox price published)`
                 : `${e.label} ${e.prod} → ${e.sandbox}`
         ).join(', ');
 
         const scope =
-            `Environment changes flat per-event rates only: ${deltas}. ` +
-            `Prompt tiers (Starter, Basic, Standard, Advanced) consume the same credits in ` +
-            `production and sandbox, so this setting never changes a token-based estimate. ` +
-            `Data 360 and Speech Foundations also have separate sandbox rates, but this ` +
-            `calculator does not price those.`;
+            `Production is your real, live org. Sandbox is the practice copy, and events are ` +
+            `usually a little cheaper there. This choice only changes the fixed per-event prices: ` +
+            `${deltas}. Prompts cost the same credits in both, so it never changes a ` +
+            `pay-by-size answer.`;
 
         return this.isTokenMode
-            ? `${scope} You are in token-based mode, so this setting does not affect the numbers shown.`
+            ? `${scope} You are in pay-by-size mode right now, so this setting is not changing your numbers.`
             : scope;
+    }
+
+    get eventTypeHelp() {
+        const inSandbox = this.environment === 'sandbox';
+        const rates = FLAT_EVENTS.map((e) => {
+            const rate = inSandbox ? e.sandbox : e.prod;
+            return rate === null || rate === undefined
+                ? `${e.label} has no published price`
+                : `${e.label} costs ${rate}`;
+        }).join(', ');
+        return (
+            `Pick the kind of thing the agent does. Each kind costs a fixed number of credits ` +
+            `every time it happens, no matter how big the job is. Right now (${
+                inSandbox ? 'sandbox' : 'production'
+            }): ${rates}.`
+        );
+    }
+
+    get promptTierHelp() {
+        const tiers = PROMPT_TIERS.map((t) => `${t.label} ${t.multiplier}×`).join(', ');
+        return (
+            `The tier is the level of AI model the prompt uses. A higher tier is smarter but ` +
+            `uses more credits for the same amount of text. The × number is the multiplier in ` +
+            `the math: ${tiers}. Example: 4,000 tokens on Standard (4×) is 4,000 ÷ 2,000 × 4 = 8 credits.`
+        );
+    }
+
+    get formulaHelp() {
+        if (this.isFlatMode) {
+            return (
+                'This is the math behind the numbers on the right. In fixed-price mode there is ' +
+                'no math to do: every event costs the same set number of credits, so we just ' +
+                'multiply that price by how many times it happens.'
+            );
+        }
+        if (this.isBlendedMode) {
+            return (
+                'This is the math behind the numbers on the right. One request = the prompt part ' +
+                '(tokens ÷ 2,000 × the tier number) plus the agent actions (each one a fixed ' +
+                'credit price), all added together.'
+            );
+        }
+        return (
+            'This is the math behind the numbers on the right. Take the tokens, divide by 2,000, ' +
+            'then multiply by the tier number. Example: 4,000 tokens on Standard (4×) is ' +
+            '4,000 ÷ 2,000 × 4 = 8 credits.'
+        );
     }
 
     get tokenOptions() {

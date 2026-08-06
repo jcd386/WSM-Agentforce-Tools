@@ -34,10 +34,17 @@
 }
 
 .wsm-price-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--lwc-colorTextWeak, #5c5c5c);
+}
+
+.wsm-result-table thead th lightning-helptext {
+    margin-left: 4px;
 }
 
 .wsm-price-value {

@@ -19,6 +19,9 @@
 }
 
 .wsm-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-size: 1rem;
     font-weight: 700;
     line-height: 1.2;
@@ -83,7 +86,7 @@
 
 .wsm-panel-head {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 8px;
     margin-bottom: 8px;
 }

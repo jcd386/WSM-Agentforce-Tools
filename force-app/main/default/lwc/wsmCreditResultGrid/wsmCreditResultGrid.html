@@ -2,18 +2,33 @@
     <div class="wsm-results-card">
         <div class="wsm-results-head">
             <div>
-                <p class="wsm-price-label">List price</p>
+                <p class="wsm-price-label">
+                    List price
+                    <lightning-helptext
+                        content="The normal sticker price everyone starts at: $500 for 100,000 credits. That works out to half a cent per credit."
+                        alternative-text="What is list price?"
+                    ></lightning-helptext>
+                </p>
                 <p class="wsm-price-value">{model.listPriceText} <span>per 100,000 credits</span></p>
             </div>
             <div>
-                <p class="wsm-price-label">Negotiated</p>
+                <p class="wsm-price-label">
+                    Your price
+                    <lightning-helptext
+                        content="What this customer really pays for 100,000 credits after their discount. Set it with the Discount % or Your price boxes on the left."
+                        alternative-text="What is your price?"
+                    ></lightning-helptext>
+                </p>
                 <p class="wsm-price-value">{model.negotiatedPriceText} <span>per 100,000 credits</span></p>
             </div>
             <div class="wsm-results-badge-wrap">
                 <template lwc:if={model.hasUplift}>
-                    <span class="wsm-price-badge wsm-price-badge_uplift">{model.upliftText}</span>
+                    <span
+                        class="wsm-price-badge wsm-price-badge_uplift"
+                        title="The dollar amounts below include the extra add-on percent you typed on the left."
+                    >{model.upliftText}</span>
                 </template>
-                <span class={discountClass}>{discountCaption}</span>
+                <span class={discountClass} title="How your price compares to the normal list price.">{discountCaption}</span>
             </div>
         </div>
 
@@ -22,11 +37,41 @@
                 <table class="wsm-result-table">
                     <thead>
                         <tr>
-                            <th scope="col" class="wsm-col-basis">Basis</th>
-                            <th scope="col" class="wsm-num">Credits consumed</th>
-                            <th scope="col" class="wsm-num">$ at list</th>
-                            <th scope="col" class="wsm-num">$ negotiated</th>
-                            <th scope="col" class="wsm-num">You save</th>
+                            <th scope="col" class="wsm-col-basis">
+                                Amount
+                                <lightning-helptext
+                                    content="Every row is the same math at a different size: one request, then 1,000 requests, then a whole month, then a whole year. The month and year rows use your Requests per month number."
+                                    alternative-text="What does each row mean?"
+                                ></lightning-helptext>
+                            </th>
+                            <th scope="col" class="wsm-num">
+                                Credits used
+                                <lightning-helptext
+                                    content="How many credits get used up. Credits are the tickets you spend to run agents. This number never changes with price — a discount makes credits cheaper to buy, not fewer to spend."
+                                    alternative-text="What are credits used?"
+                                ></lightning-helptext>
+                            </th>
+                            <th scope="col" class="wsm-num">
+                                $ at list price
+                                <lightning-helptext
+                                    content="What those credits would cost at the normal $500 price."
+                                    alternative-text="What is the list price column?"
+                                ></lightning-helptext>
+                            </th>
+                            <th scope="col" class="wsm-num">
+                                $ at your price
+                                <lightning-helptext
+                                    content="What those same credits cost at this customer's discounted price."
+                                    alternative-text="What is the your price column?"
+                                ></lightning-helptext>
+                            </th>
+                            <th scope="col" class="wsm-num">
+                                You save
+                                <lightning-helptext
+                                    content="The money kept thanks to the discount: the list price cost minus your cost."
+                                    alternative-text="What is the you save column?"
+                                ></lightning-helptext>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -49,17 +94,17 @@
             </div>
 
             <p class="wsm-results-note">
-                Credits consumed are identical at both prices. Negotiating changes the dollar value
-                of a credit, never the number of credits an agent burns.
+                A discount changes what a credit costs in dollars &mdash; it never changes how many
+                credits the agent uses. Both price columns spend exactly the same credits.
             </p>
         </template>
 
         <template lwc:else>
             <div class="wsm-empty">
-                <p class="wsm-empty-title">No published rate</p>
+                <p class="wsm-empty-title">No published price</p>
                 <p class="wsm-empty-body">
-                    Salesforce has not published a rate for this combination, so there is nothing to
-                    calculate. Pick a different event or environment.
+                    Salesforce has not put a price on this combination yet, so there is no math to
+                    do. Pick a different event type or environment.
                 </p>
             </div>
         </template>

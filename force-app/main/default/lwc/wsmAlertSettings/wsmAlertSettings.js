@@ -23,14 +23,14 @@ const RECIPIENT_COLUMNS = [
 
 const THRESHOLD_COLUMNS = [
     {
-        label: 'Threshold',
+        label: 'Alert at %',
         fieldName: 'value',
         type: 'number',
         editable: true,
         initialWidth: 140,
         cellAttributes: { alignment: 'right' }
     },
-    { label: 'Trigger type', fieldName: 'triggerTypeLabel' },
+    { label: 'Measures', fieldName: 'triggerTypeLabel' },
     { label: 'Active', fieldName: 'isActive', type: 'boolean', editable: true, initialWidth: 90 },
     {
         type: 'action',
@@ -441,7 +441,7 @@ export default class WsmAlertSettings extends LightningElement {
             this.dispatchEvent(
                 new ShowToastEvent({
                     title: 'Alert settings saved',
-                    message: 'The scheduled flow will use these on its next run.',
+                    message: 'Done. The next daily check will use these settings.',
                     variant: 'success'
                 })
             );

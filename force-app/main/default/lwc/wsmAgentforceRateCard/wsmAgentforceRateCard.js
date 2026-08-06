@@ -222,33 +222,40 @@ export function computeProjection(input) {
         const multiplier = tier ? tier.multiplier : 0;
         creditsPerRequest = promptCredits(effectiveTokens, multiplier);
         formula =
-            `(${fmt.int.format(effectiveTokens)} tokens ÷ ${fmt.int.format(TOKENS_PER_CREDIT_BLOCK)})` +
-            ` × ${multiplier} = ${fmt.credits2.format(creditsPerRequest)} credits per request`;
+            `Take ${fmt.int.format(effectiveTokens)} tokens, divide by ` +
+            `${fmt.int.format(TOKENS_PER_CREDIT_BLOCK)}, multiply by ${multiplier} = ` +
+            `${fmt.credits2.format(creditsPerRequest)} credits each time.`;
     } else if (mode === 'flat') {
         if (flatRate === null || flatRate === undefined) {
             unpublished = true;
-            formula = `${event ? event.label : 'This event'} has no published ${
+            formula = `Salesforce has not published a ${
                 environment === 'sandbox' ? 'sandbox' : 'production'
-            } rate. Salesforce has not stated one, so this calculator will not estimate it.`;
+            } price for ${
+                event ? event.label : 'this event'
+            } yet, so there is nothing to calculate.`;
         } else {
             creditsPerRequest = flatRate;
             formula =
-                `${event.label} (${environment === 'sandbox' ? 'Sandbox' : 'Production'}) = ` +
-                `${flatRate} credits per request — FLAT. Token count is ignored.`;
+                `Every ${event.label} in ${
+                    environment === 'sandbox' ? 'a sandbox' : 'production'
+                } costs ${flatRate} credits — always the same, no matter how big the job is.`;
         }
     } else if (mode === 'blended') {
         const multiplier = tier ? tier.multiplier : 0;
         const prompt = promptCredits(effectiveTokens, multiplier);
         if (flatRate === null || flatRate === undefined) {
             unpublished = true;
-            formula = `${event ? event.label : 'This event'} has no published rate for this environment.`;
+            formula = `Salesforce has not published a price for ${
+                event ? event.label : 'this event'
+            } in this environment yet, so there is nothing to calculate.`;
         } else {
             const actions = actionsPerRequest * flatRate;
             creditsPerRequest = prompt + actions;
             formula =
-                `1 ${tier ? tier.label : ''} prompt (${fmt.credits2.format(prompt)}) + ` +
-                `${fmt.int.format(actionsPerRequest)} × ${event.label} (${fmt.credits2.format(actions)}) = ` +
-                `${fmt.credits2.format(creditsPerRequest)} credits per request`;
+                `1 ${tier ? tier.label : ''} prompt costs ${fmt.credits2.format(prompt)}, plus ` +
+                `${fmt.int.format(actionsPerRequest)} × ${event.label} costs ${fmt.credits2.format(
+                    actions
+                )} — ${fmt.credits2.format(creditsPerRequest)} credits each time.`;
         }
     }
 
@@ -257,10 +264,10 @@ export function computeProjection(input) {
     const yearlyRequests = monthlyRequests * MONTHS_PER_YEAR;
 
     const basis = [
-        { key: 'request', label: 'Per request', multiplier: 1, creditDecimals: 2, dollarDecimals: 4 },
-        { key: 'thousand', label: 'Per 1,000 requests', multiplier: 1000, creditDecimals: 0, dollarDecimals: 2 },
-        { key: 'month', label: 'Per month', multiplier: monthlyRequests, creditDecimals: 0, dollarDecimals: 2 },
-        { key: 'year', label: 'Per year', multiplier: yearlyRequests, creditDecimals: 0, dollarDecimals: 2 }
+        { key: 'request', label: 'One request', multiplier: 1, creditDecimals: 2, dollarDecimals: 4 },
+        { key: 'thousand', label: '1,000 requests', multiplier: 1000, creditDecimals: 0, dollarDecimals: 2 },
+        { key: 'month', label: 'A whole month', multiplier: monthlyRequests, creditDecimals: 0, dollarDecimals: 2 },
+        { key: 'year', label: 'A whole year', multiplier: yearlyRequests, creditDecimals: 0, dollarDecimals: 2 }
     ];
 
     const rows = basis.map((b) => {
@@ -270,9 +277,9 @@ export function computeProjection(input) {
         const savings = credits === null ? null : listDollars - negDollars;
         let qualifier = '';
         if (b.key === 'month' && monthlyRequests) {
-            qualifier = `${fmt.int.format(monthlyRequests)} req`;
+            qualifier = `${fmt.int.format(monthlyRequests)} requests`;
         } else if (b.key === 'year' && yearlyRequests) {
-            qualifier = `${fmt.int.format(yearlyRequests)} req`;
+            qualifier = `${fmt.int.format(yearlyRequests)} requests`;
         }
         return {
             key: b.key,

@@ -43,6 +43,9 @@
 }
 
 .wsm-ref-h {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-size: 0.8125rem;
     font-weight: 600;
     text-transform: uppercase;

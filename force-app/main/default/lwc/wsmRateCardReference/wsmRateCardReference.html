@@ -1,6 +1,11 @@
 <template>
     <div class="wsm-ref-card">
-        <button class="wsm-ref-toggle" type="button" onclick={handleToggle}>
+        <button
+            class="wsm-ref-toggle"
+            type="button"
+            title="Opens the official Salesforce price tables so you can check any number without leaving this page."
+            onclick={handleToggle}
+        >
             <lightning-icon icon-name={toggleIcon} size="x-small"></lightning-icon>
             <span>{toggleLabel}</span>
             <span class="wsm-ref-version">Flex Credits rate card &middot; effective {version}</span>
@@ -9,15 +14,27 @@
         <template lwc:if={expanded}>
             <div class="wsm-ref-body">
                 <section class="wsm-ref-section">
-                    <h3 class="wsm-ref-h">Token-based</h3>
-                    <p class="wsm-ref-sub">credits = (tokens &divide; {tokenBlock}) &times; multiplier</p>
+                    <h3 class="wsm-ref-h">
+                        Prompts &mdash; pay by size
+                        <lightning-helptext
+                            content="Prompts are priced by how much text the AI reads and writes. Count the tokens, divide by 2,000, then multiply by the tier's × number. Bigger text or a smarter tier = more credits."
+                            alternative-text="How are prompts priced?"
+                        ></lightning-helptext>
+                    </h3>
+                    <p class="wsm-ref-sub">credits = (tokens &divide; {tokenBlock}) &times; the tier&rsquo;s multiplier</p>
                     <div class="wsm-table-scroll">
                         <table class="wsm-ref-table">
                             <thead>
                                 <tr>
                                     <th scope="col">Prompt tier</th>
                                     <th scope="col">LLM</th>
-                                    <th scope="col" class="wsm-num">Multiplier</th>
+                                    <th scope="col" class="wsm-num">
+                                        Multiplier
+                                        <lightning-helptext
+                                            content="The × number in the math. The bigger it is, the more credits the same amount of text costs. Advanced (16×) burns 8 times more than Basic (2×)."
+                                            alternative-text="What is the multiplier?"
+                                        ></lightning-helptext>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -34,15 +51,33 @@
                 </section>
 
                 <section class="wsm-ref-section">
-                    <h3 class="wsm-ref-h">Flat per event</h3>
-                    <p class="wsm-ref-sub">credits = fixed rate. Token count is irrelevant.</p>
+                    <h3 class="wsm-ref-h">
+                        Agent events &mdash; fixed price
+                        <lightning-helptext
+                            content="These cost the same set number of credits every single time. Size does not matter at all: a huge action and a tiny one cost exactly the same. Never divide these by 2,000 — that is the prompts math, not this one."
+                            alternative-text="How are agent events priced?"
+                        ></lightning-helptext>
+                    </h3>
+                    <p class="wsm-ref-sub">credits = the fixed price. How big the job is makes no difference.</p>
                     <div class="wsm-table-scroll">
                         <table class="wsm-ref-table">
                             <thead>
                                 <tr>
                                     <th scope="col">Event</th>
-                                    <th scope="col" class="wsm-num">Production</th>
-                                    <th scope="col" class="wsm-num">Sandbox</th>
+                                    <th scope="col" class="wsm-num">
+                                        Production
+                                        <lightning-helptext
+                                            content="The price in a real, live org."
+                                            alternative-text="What does production mean?"
+                                        ></lightning-helptext>
+                                    </th>
+                                    <th scope="col" class="wsm-num">
+                                        Sandbox
+                                        <lightning-helptext
+                                            content="The price in a practice (sandbox) org — usually a little cheaper."
+                                            alternative-text="What does sandbox mean?"
+                                        ></lightning-helptext>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -59,23 +94,36 @@
                 </section>
 
                 <section class="wsm-ref-section wsm-ref-warn">
-                    <h3 class="wsm-ref-h">Customer 360 Platform &mdash; not priced</h3>
+                    <h3 class="wsm-ref-h">
+                        Customer 360 Platform &mdash; no price yet
+                        <lightning-helptext
+                            content="Salesforce has announced these will use credits but has not said how many. TBA means to be announced. Until a real number is published, nobody can price these honestly."
+                            alternative-text="Why is there no price here?"
+                        ></lightning-helptext>
+                    </h3>
                     <template for:each={unpricedRows} for:item="row">
                         <p key={row.key} class="wsm-ref-warn-line">
                             <strong>{row.label}</strong> &mdash; TBA
                         </p>
                     </template>
                     <p class="wsm-ref-sub">
-                        Salesforce has not published a rate for these. This calculator will not
-                        estimate them, and any figure you have seen elsewhere is a guess. Do not
+                        Salesforce has not published a price for these, so this calculator will not
+                        guess one. Any number you have seen elsewhere is a guess too &mdash; do not
                         quote one to a customer.
                     </p>
                 </section>
 
                 <section class="wsm-ref-section">
-                    <h3 class="wsm-ref-h">Data 360 &mdash; reference only</h3>
+                    <h3 class="wsm-ref-h">
+                        Data 360 &mdash; for reference only
+                        <lightning-helptext
+                            content="Data 360 has its own credit prices, shown here so you can look one up. The price per row drops as you use more in a month (volume tiers), and the counter starts over every month. This calculator does not do this math for you."
+                            alternative-text="What is this Data 360 table?"
+                        ></lightning-helptext>
+                    </h3>
                     <p class="wsm-ref-sub">
-                        Volume tiers reset monthly per usage type. Not calculated here.
+                        The more you use in a month, the cheaper each row gets. Counters reset
+                        monthly. Not calculated by this tool &mdash; look-up only.
                     </p>
                     <div class="wsm-table-scroll">
                         <table class="wsm-ref-table">
@@ -104,7 +152,13 @@
                 </section>
 
                 <section class="wsm-ref-section">
-                    <h3 class="wsm-ref-h">Speech Foundations &mdash; reference only</h3>
+                    <h3 class="wsm-ref-h">
+                        Speech Foundations &mdash; for reference only
+                        <lightning-helptext
+                            content="Prices for turning speech into text, text into speech, and translating. Shown so you can look one up — this calculator does not do this math for you."
+                            alternative-text="What is this Speech Foundations table?"
+                        ></lightning-helptext>
+                    </h3>
                     <div class="wsm-table-scroll">
                         <table class="wsm-ref-table">
                             <thead>
@@ -128,10 +182,7 @@
                 </section>
 
                 <p class="wsm-ref-foot">
-                    List price {listPrice} per 100,000 credits.
-                    <a href={sourceUrl} target="_blank" rel="noopener noreferrer">Agentforce rates</a>
-                    &middot;
-                    <a href={llmUrl} target="_blank" rel="noopener noreferrer">Supported LLMs</a>
+                    Normal price: {listPrice} per 100,000 credits.&nbsp;<a href={sourceUrl} target="_blank" rel="noopener noreferrer">Agentforce rates</a>&nbsp;&middot;&nbsp;<a href={llmUrl} target="_blank" rel="noopener noreferrer">Supported LLMs</a>
                 </p>
             </div>
         </template>

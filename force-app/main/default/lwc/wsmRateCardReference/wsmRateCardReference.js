@@ -35,7 +35,7 @@ export default class WsmRateCardReference extends LightningElement {
     data360Tiers = DATA_360_TIERS;
 
     get toggleLabel() {
-        return this.expanded ? 'Hide rate card reference' : 'Show rate card reference';
+        return this.expanded ? 'Hide the full price list' : 'Show the full price list';
     }
 
     get toggleIcon() {

@@ -6,9 +6,16 @@
 
         <div class="wsm-bar">
             <div class="wsm-bar-title">
-                <h2 class="wsm-title">Digital Wallet Alert Settings</h2>
+                <h2 class="wsm-title">
+                    Digital Wallet Alert Settings
+                    <lightning-helptext
+                        content="An automatic check runs once a day and looks at how many Agentforce credits are left on each card in the Digital Wallet. When usage crosses one of the alert lines below, it tells the people below. Each card sends at most one alert per day — the highest line it has crossed."
+                        alternative-text="What does this page do?"
+                    ></lightning-helptext>
+                </h2>
                 <p class="wsm-sub">
-                    Read by the scheduled flow on its next daily run. One alert per card per run.
+                    Checked automatically once a day. When credit usage crosses one of your alert
+                    lines, the people below get told. One alert per card per day.
                 </p>
             </div>
             <template lwc:if={hasSenders}>
@@ -18,6 +25,7 @@
                     placeholder="Select an address"
                     options={senderOptions}
                     value={senderAddress}
+                    field-level-help="Alert emails will show this as their From address. Leave it empty and no emails go out at all — people linked to a Salesforce user still get the in-app bell notification."
                     onchange={handleSenderChange}
                     disabled={busy}
                 ></lightning-combobox>
@@ -25,6 +33,7 @@
             <lightning-button
                 class="wsm-refresh"
                 label="Refresh"
+                title="Reload this page with whatever is saved right now."
                 variant="neutral"
                 onclick={handleRefresh}
                 disabled={busy}
@@ -42,8 +51,8 @@
             <div class="wsm-alert wsm-alert_warn" role="status">
                 <lightning-icon icon-name="utility:warning" size="xx-small"></lightning-icon>
                 <span>
-                    No active recipient is linked to a Salesforce user, so in-app notifications fall
-                    back to every active system administrator.
+                    Nobody in the list is linked to a Salesforce user, so the in-app bell
+                    notifications will go to every active system administrator instead.
                 </span>
             </div>
         </template>
@@ -52,8 +61,9 @@
             <div class="wsm-alert wsm-alert_warn" role="status">
                 <lightning-icon icon-name="utility:warning" size="xx-small"></lightning-icon>
                 <span>
-                    That address is not enabled for all profiles. The flow sends as the Automated
-                    Process User, so it may be rejected at send time.
+                    This From address is not turned on for all profiles. The daily check sends as an
+                    automatic system user, so its emails could get rejected. Safer: pick an address
+                    marked for all profiles.
                 </span>
             </div>
         </template>
@@ -61,7 +71,10 @@
         <template lwc:if={showNoSenderWarning}>
             <div class="wsm-alert wsm-alert_warn" role="status">
                 <lightning-icon icon-name="utility:warning" size="xx-small"></lightning-icon>
-                <span>Recipients have emails but no sender is selected, so no email will go out.</span>
+                <span>
+                    People below have email addresses, but no From address is picked &mdash; so no
+                    emails will be sent. Pick one in the box above.
+                </span>
             </div>
         </template>
 
@@ -69,9 +82,9 @@
             <div class="wsm-alert wsm-alert_warn" role="status">
                 <lightning-icon icon-name="utility:warning" size="xx-small"></lightning-icon>
                 <span>
-                    No verified organization-wide email addresses exist, so alert emails cannot be
-                    sent. Add one under Setup &rarr; Organization-Wide Addresses, then refresh.
-                    In-app notifications work without one.
+                    This org has no verified organization-wide email address, so alert emails cannot
+                    be sent yet. Add one under Setup &rarr; Organization-Wide Addresses, then press
+                    Refresh. In-app bell notifications still work without one.
                 </span>
             </div>
         </template>
@@ -79,7 +92,11 @@
         <div class="wsm-split">
             <div class="wsm-panel">
                 <div class="wsm-panel-head">
-                    <h3 class="wsm-panel-h">Recipients</h3>
+                    <h3 class="wsm-panel-h">Who gets the alerts</h3>
+                    <lightning-helptext
+                        content="The people who get told when credits run low. Link a Salesforce user and their email comes straight from their user record — if their email ever changes, alerts follow automatically with nothing to update here. Users also get the in-app bell notification. For someone outside Salesforce, just type their email."
+                        alternative-text="Who are recipients?"
+                    ></lightning-helptext>
                     <span class="wsm-panel-meta">{audienceSummary}</span>
                 </div>
 
@@ -168,19 +185,28 @@
                         onclick={handleAddRecipient}
                         disabled={addRecipientDisabled}
                     ></lightning-button>
+                    <lightning-helptext
+                        content="To add someone: type a name, then EITHER type their email OR pick a Salesforce user (picking a user grays out the email box, because their user record supplies it). Press Add and it saves right away. New people start out Active."
+                        alternative-text="How do I add someone?"
+                    ></lightning-helptext>
                 </div>
                 <p class="wsm-hint">
-                    Pick a Salesforce user and their address is used automatically &mdash; that is why
-                    Email is read-only in the table. For someone who is not a user, type an address
-                    instead. Use the row menu to change either. Adding, removing and row-menu changes
-                    save right away; in-table edits use the table's Save.
+                    Pick a Salesforce user and their email is filled in for you &mdash; that is why
+                    the Email column cannot be typed in. Use the little row menu on the right of each
+                    row to change a person&rsquo;s user or email. Adding, removing and row-menu
+                    changes save instantly; edits made right in the table need the table&rsquo;s Save
+                    button.
                 </p>
             </div>
 
             <div class="wsm-panel">
                 <div class="wsm-panel-head">
-                    <h3 class="wsm-panel-h">Thresholds</h3>
-                    <span class="wsm-panel-meta">percent consumed</span>
+                    <h3 class="wsm-panel-h">Alert lines (thresholds)</h3>
+                    <lightning-helptext
+                        content="A threshold is a tripwire. 80 means: tell everyone when 80% of the credits are used up. You can add as many lines as you like. The 100% line is special — it is what fires again when a prepaid card goes over its limit — so it cannot be removed or turned off."
+                        alternative-text="What is a threshold?"
+                    ></lightning-helptext>
+                    <span class="wsm-panel-meta">percent of credits used</span>
                 </div>
 
                 <lightning-datatable
@@ -211,10 +237,14 @@
                         onclick={handleAddThreshold}
                         disabled={busy}
                     ></lightning-button>
+                    <lightning-helptext
+                        content="Type a number from 1 to 100 and press Add. Example: 75 means alert everyone when three quarters of the credits are gone. It saves right away."
+                        alternative-text="How do I add an alert line?"
+                    ></lightning-helptext>
                 </div>
                 <p class="wsm-hint">
-                    The 100% threshold cannot be removed or deactivated &mdash; it is the only
-                    trigger for prepaid overage alerts.
+                    The 100% line cannot be removed or turned off &mdash; it is the only trigger for
+                    alerts when a prepaid card goes over its limit.
                 </p>
             </div>
         </div>

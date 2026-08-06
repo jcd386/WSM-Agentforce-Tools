@@ -1,27 +1,37 @@
 <template>
     <div class="wsm-calc">
         <div class="wsm-bar">
-            <div class="wsm-bar-modes" role="group" aria-label="Billing shape">
-                <template for:each={modeOptions} for:item="opt">
-                    <button
-                        key={opt.value}
-                        type="button"
-                        class={opt.cls}
-                        data-mode={opt.value}
-                        aria-pressed={opt.selected}
-                        onclick={handleModeClick}
-                    >
-                        <span class="wsm-seg-label">{opt.label}</span>
-                        <span class="wsm-seg-detail">{opt.detail}</span>
-                    </button>
-                </template>
+            <div class="wsm-modes-wrap">
+                <div class="wsm-mini-label">
+                    <span>How is it billed?</span>
+                    <lightning-helptext
+                        content={modeHelp}
+                        alternative-text="What do the three billing choices mean?"
+                    ></lightning-helptext>
+                </div>
+                <div class="wsm-bar-modes" role="group" aria-label="How is it billed?">
+                    <template for:each={modeOptions} for:item="opt">
+                        <button
+                            key={opt.value}
+                            type="button"
+                            class={opt.cls}
+                            data-mode={opt.value}
+                            title={opt.title}
+                            aria-pressed={opt.selected}
+                            onclick={handleModeClick}
+                        >
+                            <span class="wsm-seg-label">{opt.label}</span>
+                            <span class="wsm-seg-detail">{opt.detail}</span>
+                        </button>
+                    </template>
+                </div>
             </div>
             <div class="wsm-env">
-                <div class="wsm-env-label">
+                <div class="wsm-mini-label">
                     <span>Environment</span>
                     <lightning-helptext
                         content={environmentHelp}
-                        alternative-text="What does the environment setting affect?"
+                        alternative-text="What does the environment setting change?"
                     ></lightning-helptext>
                 </div>
                 <lightning-radio-group
@@ -36,7 +46,8 @@
             </div>
             <lightning-button
                 class="wsm-reset"
-                label="Reset"
+                label="Start over"
+                title="Clears every box and puts all the normal starting values back."
                 variant="neutral"
                 onclick={handleReset}
             ></lightning-button>
@@ -48,9 +59,10 @@
                     <template lwc:if={showEventInputs}>
                         <div class="wsm-field">
                             <lightning-combobox
-                                label="Event type"
+                                label="What does the agent do? (event type)"
                                 options={flatEventOptions}
                                 value={flatEventKey}
+                                field-level-help={eventTypeHelp}
                                 onchange={handleFlatEventChange}
                             ></lightning-combobox>
                         </div>
@@ -64,6 +76,7 @@
                                 data-field="actions"
                                 value={raw.actions}
                                 min="0"
+                                field-level-help="How many actions the agent takes to answer one request. Example: if it looks up an order and then updates a record, that is 2 actions. Each action costs the fixed credit price shown in the event type box."
                                 onchange={handleRawChange}
                             ></lightning-input>
                         </div>
@@ -72,23 +85,32 @@
                     <div class={tokenFieldClass}>
                         <lightning-input
                             type="number"
-                            label="Tokens per prompt request"
+                            label="Tokens in one prompt request"
                             data-field="exactTokens"
                             value={raw.exactTokens}
                             disabled={tokensDisabled}
-                            placeholder="Blank uses the value below"
+                            placeholder="Blank uses the quick pick below"
+                            field-level-help="Tokens are the little pieces of text an AI reads and writes. Roughly 750 words is about 1,000 tokens. Type the exact number if you know it, or leave this blank and press a quick-pick button below."
                             onchange={handleRawChange}
                         ></lightning-input>
                         <template lwc:if={tokensDisabled}>
-                            <p class="wsm-field-off-note">Not used &mdash; flat rate.</p>
+                            <p class="wsm-field-off-note">Not used here &mdash; this event costs a fixed price, so size does not matter.</p>
                         </template>
                     </div>
 
                     <div class={tokenFieldClass}>
+                        <div class="wsm-mini-label">
+                            <span>Quick picks (tokens)</span>
+                            <lightning-helptext
+                                content="Shortcut buttons for common token amounts. Press one instead of typing. If you type an exact number in the box above, that number wins."
+                                alternative-text="What are the quick pick buttons for?"
+                            ></lightning-helptext>
+                        </div>
                         <lightning-radio-group
                             class="wsm-chips"
                             name="commonTokens"
-                            label="Common values"
+                            label="Quick picks (tokens)"
+                            variant="label-hidden"
                             type="button"
                             options={tokenOptions}
                             value={commonTokens}
@@ -99,10 +121,18 @@
 
                     <template lwc:if={showPromptInputs}>
                         <div class="wsm-field">
+                            <div class="wsm-mini-label">
+                                <span>Prompt tier (model level)</span>
+                                <lightning-helptext
+                                    content={promptTierHelp}
+                                    alternative-text="What is a prompt tier?"
+                                ></lightning-helptext>
+                            </div>
                             <lightning-radio-group
                                 class="wsm-chips"
                                 name="promptTier"
-                                label="Prompt tier"
+                                label="Prompt tier (model level)"
+                                variant="label-hidden"
                                 type="button"
                                 options={promptTierOptions}
                                 value={promptTierKey}
@@ -114,20 +144,20 @@
                     <div class="wsm-pair">
                         <lightning-input
                             type="number"
-                            label="Monthly requests"
+                            label="Requests per month"
                             data-field="monthlyRequests"
                             value={raw.monthlyRequests}
                             min="0"
-                            field-level-help="Drives the monthly and yearly rows. Blank is treated as zero."
+                            field-level-help="How many requests you expect in one month. This fills in the per-month and per-year rows on the right. Leaving it blank means zero."
                             onchange={handleRawChange}
                         ></lightning-input>
                         <lightning-input
                             type="number"
-                            label="Uplift %"
+                            label="Add-on uplift %"
                             data-field="uplift"
                             value={raw.uplift}
                             step="0.1"
-                            field-level-help="For add-ons billed as a percent of total spend, such as Shield. Applied on top of the dollar figures. It does not change credits consumed."
+                            field-level-help="Some add-ons, like Shield, charge extra as a percent of the bill. Put that percent here. It makes the dollar numbers bigger, but it never changes how many credits are used."
                             onchange={handleRawChange}
                         ></lightning-input>
                     </div>
@@ -137,23 +167,23 @@
                             label="Discount %"
                             value={raw.discountPct}
                             step="0.1"
-                            field-level-help="Enter the discount off list. 20 means 20% off, i.e. $400 per 100,000 credits."
+                            field-level-help="How much Salesforce is taking off the normal price for this customer. Type 20 and the price drops from $500 to $400 per 100,000 credits. This box and the price box next to it are the same thing said two ways: change one and the other updates by itself."
                             onchange={handleDiscountChange}
                         ></lightning-input>
                         <lightning-input
                             type="number"
-                            label="Negotiated $ / 100K"
+                            label="Your price per 100K credits"
                             data-field="negotiated"
                             value={raw.negotiated}
                             step="0.01"
-                            field-level-help="The rate this customer actually gets. Blank or 500 is list price."
+                            field-level-help="The negotiated price this customer really pays for 100,000 credits. The normal (list) price is $500. Leave it blank, or at 500, if there is no special deal."
                             onchange={handleRawChange}
                         ></lightning-input>
                     </div>
                     <p class="wsm-hint">
-                        Discount and negotiated rate are linked &mdash; enter whichever you know.
-                        List is $500.00 per 100,000 credits ($0.005 per credit, 200 credits per
-                        $1.00). Blank monthly requests = 0.
+                        Know the discount? Type it. Know the price instead? Type that &mdash; the two
+                        boxes always stay in sync. Normal price: $500.00 per 100,000 credits, which is
+                        half a cent per credit (200 credits per $1.00).
                     </p>
                 </div>
             </div>
@@ -161,6 +191,11 @@
             <div class="wsm-col-results">
                 <div class={formulaClass}>
                     <span class="wsm-formula-text">{viewModel.formula}</span>
+                    <lightning-helptext
+                        class="wsm-formula-help"
+                        content={formulaHelp}
+                        alternative-text="What does this math mean?"
+                    ></lightning-helptext>
                 </div>
                 <c-wsm-credit-result-grid model={viewModel}></c-wsm-credit-result-grid>
             </div>
@@ -169,10 +204,8 @@
         <c-wsm-rate-card-reference></c-wsm-rate-card-reference>
 
         <p class="wsm-provenance">
-            Rates from the Salesforce Flex Credits rate card effective
-            <strong>{rateCardVersion}</strong>, last verified <strong>{ratesVerified}</strong>.
-            Salesforce republishes without notice &mdash; confirm against
-            <a href={rateCardSourceUrl} target="_blank" rel="noopener noreferrer">agentforce/rates</a>&nbsp;and&nbsp;<a href={pricingSourceUrl} target="_blank" rel="noopener noreferrer">agentforce/pricing</a>&nbsp;before quoting.
+            These prices come from the official Salesforce Flex Credits rate card, effective <strong>{rateCardVersion}</strong>, last checked by us on <strong>{ratesVerified}</strong>.
+            Salesforce can change prices without telling anyone, so double-check <a href={rateCardSourceUrl} target="_blank" rel="noopener noreferrer">agentforce/rates</a>&nbsp;and&nbsp;<a href={pricingSourceUrl} target="_blank" rel="noopener noreferrer">agentforce/pricing</a>&nbsp;before quoting a customer.
         </p>
     </div>
 </template>
