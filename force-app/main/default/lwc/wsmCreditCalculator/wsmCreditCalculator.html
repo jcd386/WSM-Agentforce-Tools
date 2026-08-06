@@ -34,15 +34,20 @@
                         alternative-text="What does the environment setting change?"
                     ></lightning-helptext>
                 </div>
-                <lightning-radio-group
-                    name="environment"
-                    label="Environment"
-                    variant="label-hidden"
-                    type="button"
-                    options={environmentOptions}
-                    value={environment}
-                    onchange={handleEnvironmentChange}
-                ></lightning-radio-group>
+                <div class="wsm-chip-row" role="radiogroup" aria-label="Environment">
+                    <template for:each={environmentOptions} for:item="opt">
+                        <button
+                            key={opt.value}
+                            type="button"
+                            class={opt.cls}
+                            role="radio"
+                            data-value={opt.value}
+                            aria-checked={opt.selected}
+                            tabindex={opt.tabindex}
+                            onclick={handleEnvironmentChange}
+                        >{opt.label}</button>
+                    </template>
+                </div>
             </div>
             <lightning-button
                 class="wsm-reset"
@@ -106,17 +111,25 @@
                                 alternative-text="What are the quick pick buttons for?"
                             ></lightning-helptext>
                         </div>
-                        <lightning-radio-group
-                            class="wsm-chips"
-                            name="commonTokens"
-                            label="Quick picks (tokens)"
-                            variant="label-hidden"
-                            type="button"
-                            options={tokenOptions}
-                            value={commonTokens}
-                            disabled={tokensDisabled}
-                            onchange={handleCommonTokensChange}
-                        ></lightning-radio-group>
+                        <div
+                            class={tokenChipRowClass}
+                            role="radiogroup"
+                            aria-label="Quick picks (tokens)"
+                        >
+                            <template for:each={tokenOptions} for:item="opt">
+                                <button
+                                    key={opt.value}
+                                    type="button"
+                                    class={opt.cls}
+                                    role="radio"
+                                    data-value={opt.value}
+                                    aria-checked={opt.selected}
+                                    tabindex={opt.tabindex}
+                                    disabled={tokensDisabled}
+                                    onclick={handleCommonTokensChange}
+                                >{opt.label}</button>
+                            </template>
+                        </div>
                     </div>
 
                     <template lwc:if={showPromptInputs}>
@@ -128,16 +141,24 @@
                                     alternative-text="What is a prompt tier?"
                                 ></lightning-helptext>
                             </div>
-                            <lightning-radio-group
-                                class="wsm-chips"
-                                name="promptTier"
-                                label="Prompt tier (model level)"
-                                variant="label-hidden"
-                                type="button"
-                                options={promptTierOptions}
-                                value={promptTierKey}
-                                onchange={handlePromptTierChange}
-                            ></lightning-radio-group>
+                            <div
+                                class="wsm-chip-row"
+                                role="radiogroup"
+                                aria-label="Prompt tier (model level)"
+                            >
+                                <template for:each={promptTierOptions} for:item="opt">
+                                    <button
+                                        key={opt.value}
+                                        type="button"
+                                        class={opt.cls}
+                                        role="radio"
+                                        data-value={opt.value}
+                                        aria-checked={opt.selected}
+                                        tabindex={opt.tabindex}
+                                        onclick={handlePromptTierChange}
+                                    >{opt.label}</button>
+                                </template>
+                            </div>
                         </div>
                     </template>
 
@@ -203,9 +224,6 @@
 
         <c-wsm-rate-card-reference></c-wsm-rate-card-reference>
 
-        <p class="wsm-provenance">
-            These prices come from the official Salesforce Flex Credits rate card, effective <strong>{rateCardVersion}</strong>, last checked by us on <strong>{ratesVerified}</strong>.
-            Salesforce can change prices without telling anyone, so double-check <a href={rateCardSourceUrl} target="_blank" rel="noopener noreferrer">agentforce/rates</a>&nbsp;and&nbsp;<a href={pricingSourceUrl} target="_blank" rel="noopener noreferrer">agentforce/pricing</a>&nbsp;before quoting a customer.
-        </p>
+        <p class="wsm-provenance">These prices come from the official Salesforce Flex Credits rate card, effective <strong>{rateCardVersion}</strong>, last checked by us on <strong>{ratesVerified}</strong>. Salesforce can change prices without telling anyone, so double-check <a href={rateCardSourceUrl} target="_blank" rel="noopener noreferrer">agentforce/rates</a> and <a href={pricingSourceUrl} target="_blank" rel="noopener noreferrer">agentforce/pricing</a> before quoting a customer.</p>
     </div>
 </template>

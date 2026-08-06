@@ -110,7 +110,15 @@ export default class WsmCreditCalculator extends LightningElement {
         return [
             { label: 'Production', value: 'prod' },
             { label: 'Sandbox', value: 'sandbox' }
-        ];
+        ].map((o) => {
+            const on = o.value === this.environment;
+            return {
+                ...o,
+                selected: on ? 'true' : 'false',
+                tabindex: on ? '0' : '-1',
+                cls: on ? 'wsm-chip wsm-chip_on' : 'wsm-chip'
+            };
+        });
     }
 
     get modeHelp() {
@@ -167,7 +175,10 @@ export default class WsmCreditCalculator extends LightningElement {
         return (
             `The tier is the level of AI model the prompt uses. A higher tier is smarter but ` +
             `uses more credits for the same amount of text. The × number is the multiplier in ` +
-            `the math: ${tiers}. Example: 4,000 tokens on Standard (4×) is 4,000 ÷ 2,000 × 4 = 8 credits.`
+            `the math: ${tiers}. Example: 4,000 tokens on Standard (4×) is 4,000 ÷ 2,000 × 4 = 8 ` +
+            `credits. Starter means a model you bring yourself. To see which model sits in which ` +
+            `tier, open "Show the full price list" below — but read the warning there first, ` +
+            `because Salesforce has not kept that list up to date.`
         );
     }
 
@@ -193,18 +204,40 @@ export default class WsmCreditCalculator extends LightningElement {
         );
     }
 
+    /**
+     * Chips are plain buttons, not a lightning-radio-group. The SLDS button
+     * group renders as a single non-wrapping row, so ten token choices
+     * overflowed the inputs column at every viewport width. These wrap.
+     */
     get tokenOptions() {
-        return TOKEN_CHOICES.map((t) => ({
-            label: formatInt(t),
-            value: String(t)
-        }));
+        return TOKEN_CHOICES.map((t) => {
+            const value = String(t);
+            const on = value === this.commonTokens;
+            return {
+                label: formatInt(t),
+                value,
+                selected: on ? 'true' : 'false',
+                tabindex: on ? '0' : '-1',
+                cls: on ? 'wsm-chip wsm-chip_on' : 'wsm-chip'
+            };
+        });
     }
 
     get promptTierOptions() {
-        return PROMPT_TIERS.map((t) => ({
-            label: `${t.label} (${t.multiplier}×)`,
-            value: t.key
-        }));
+        return PROMPT_TIERS.map((t) => {
+            const on = t.key === this.promptTierKey;
+            return {
+                label: `${t.label} (${t.multiplier}×)`,
+                value: t.key,
+                selected: on ? 'true' : 'false',
+                tabindex: on ? '0' : '-1',
+                cls: on ? 'wsm-chip wsm-chip_on' : 'wsm-chip'
+            };
+        });
+    }
+
+    get tokenChipRowClass() {
+        return this.tokensDisabled ? 'wsm-chip-row wsm-chip-row_off' : 'wsm-chip-row';
     }
 
     get flatEventOptions() {
@@ -277,15 +310,18 @@ export default class WsmCreditCalculator extends LightningElement {
     }
 
     handleEnvironmentChange(event) {
-        this.environment = event.detail.value;
+        this.environment = event.currentTarget.dataset.value;
     }
 
     handleCommonTokensChange(event) {
-        this.commonTokens = event.detail.value;
+        if (this.tokensDisabled) {
+            return;
+        }
+        this.commonTokens = event.currentTarget.dataset.value;
     }
 
     handlePromptTierChange(event) {
-        this.promptTierKey = event.detail.value;
+        this.promptTierKey = event.currentTarget.dataset.value;
     }
 
     handleFlatEventChange(event) {

@@ -93,6 +93,59 @@
                     </div>
                 </section>
 
+                <section class="wsm-ref-section">
+                    <h3 class="wsm-ref-h">
+                        Which model is in which tier?
+                        <lightning-helptext
+                            content="Salesforce publishes two separate things: the list of models Agentforce supports (kept current) and which tier each model is billed in (last published October 2025). It has not republished the tier list since it changed the multipliers, so the tiers below are last-known, not confirmed. Check with Salesforce before you quote."
+                            alternative-text="How reliable is this model list?"
+                        ></lightning-helptext>
+                    </h3>
+                    <p class="wsm-ref-sub"><strong>Starter</strong> means a model you bring yourself from somewhere else. <strong>Basic</strong>, <strong>Standard</strong> and <strong>Advanced</strong> are models Salesforce runs for you &mdash; that much is on the current rate card. Which model sits in which of those three is the part Salesforce has not kept up to date.</p>
+
+                    <div class="wsm-ref-caution">
+                        <lightning-icon icon-name="utility:warning" size="xx-small"></lightning-icon>
+                        <div>
+                            <p><strong>Do not quote these tiers to a customer without checking.</strong> The last time Salesforce published a model-to-tier list was {tierHistoryDate}. It has changed the tier multipliers since then, and it treats moving a model between tiers as the same kind of change &mdash; so a model may have moved without any announcement.</p>
+                            <p class="wsm-ref-caution-sub">{modelCountSummary}</p>
+                        </div>
+                    </div>
+
+                    <div class="wsm-table-scroll">
+                        <table class="wsm-ref-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Model</th>
+                                    <th scope="col">Runs on</th>
+                                    <th scope="col">
+                                        Tier when last published
+                                        <lightning-helptext
+                                            content="The tier Salesforce put this model in on the date shown above. Blank ones are models Salesforce has never published a tier for — most of them came out after that list was written. A missing tier does not mean the model is free or cheap; it means nobody outside Salesforce knows."
+                                            alternative-text="What does this tier column mean?"
+                                        ></lightning-helptext>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={modelRows} for:item="row">
+                                    <tr key={row.key}>
+                                        <th scope="row">
+                                            {row.label}
+                                            <template lwc:if={row.note}>
+                                                <span class="wsm-qualifier">{row.note}</span>
+                                            </template>
+                                        </th>
+                                        <td class="wsm-muted">{row.provider}</td>
+                                        <td><span class={row.tierClass}>{row.tierText}</span></td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p class="wsm-ref-sub">Model list checked {modelRosterVerified} against the <a href={modelRosterUrl} target="_blank" rel="noopener noreferrer">Supported Models</a> guide, which lists models but no tiers. Tiers come from Salesforce&rsquo;s <a href={tierHistoryUrl} target="_blank" rel="noopener noreferrer">{tierHistoryDate} rate card update</a>.</p>
+                </section>
+
                 <section class="wsm-ref-section wsm-ref-warn">
                     <h3 class="wsm-ref-h">
                         Customer 360 Platform &mdash; no price yet
@@ -181,9 +234,7 @@
                     </div>
                 </section>
 
-                <p class="wsm-ref-foot">
-                    Normal price: {listPrice} per 100,000 credits.&nbsp;<a href={sourceUrl} target="_blank" rel="noopener noreferrer">Agentforce rates</a>&nbsp;&middot;&nbsp;<a href={llmUrl} target="_blank" rel="noopener noreferrer">Supported LLMs</a>
-                </p>
+                <p class="wsm-ref-foot">Normal price: {listPrice} per 100,000 credits. <a href={sourceUrl} target="_blank" rel="noopener noreferrer">Agentforce rates</a> &middot; <a href={llmUrl} target="_blank" rel="noopener noreferrer">Supported LLMs</a></p>
             </div>
         </template>
     </div>

@@ -100,15 +100,17 @@
                     <span class="wsm-panel-meta">{audienceSummary}</span>
                 </div>
 
-                <lightning-datatable
-                    key-field="rowId"
-                    data={recipients}
-                    columns={recipientColumns}
-                    onsave={handleRecipientSave}
-                    onrowaction={handleRecipientRowAction}
-                    draft-values={emptyDrafts}
-                    hide-checkbox-column
-                ></lightning-datatable>
+                <div class="wsm-dt wsm-dt_recipients">
+                    <lightning-datatable
+                        key-field="rowId"
+                        data={recipients}
+                        columns={recipientColumns}
+                        onsave={handleRecipientSave}
+                        onrowaction={handleRecipientRowAction}
+                        draft-values={emptyDrafts}
+                        hide-checkbox-column
+                    ></lightning-datatable>
+                </div>
 
                 <template lwc:if={isEditing}>
                     <div class="wsm-editor">
@@ -209,15 +211,17 @@
                     <span class="wsm-panel-meta">percent of credits used</span>
                 </div>
 
-                <lightning-datatable
-                    key-field="rowId"
-                    data={thresholds}
-                    columns={thresholdColumns}
-                    onsave={handleThresholdSave}
-                    onrowaction={handleThresholdRowAction}
-                    draft-values={emptyDrafts}
-                    hide-checkbox-column
-                ></lightning-datatable>
+                <div class="wsm-dt wsm-dt_thresholds">
+                    <lightning-datatable
+                        key-field="rowId"
+                        data={thresholds}
+                        columns={thresholdColumns}
+                        onsave={handleThresholdSave}
+                        onrowaction={handleThresholdRowAction}
+                        draft-values={emptyDrafts}
+                        hide-checkbox-column
+                    ></lightning-datatable>
+                </div>
 
                 <div class="wsm-add">
                     <lightning-input

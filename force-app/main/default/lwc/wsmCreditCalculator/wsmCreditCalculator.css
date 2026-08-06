@@ -18,16 +18,19 @@
     flex-direction: column;
     gap: 2px;
     flex: 1 1 30rem;
+    min-width: 0;
 }
 
 .wsm-bar-modes {
     display: flex;
+    flex-wrap: wrap;
     gap: 6px;
     flex: 1 1 auto;
 }
 
 .wsm-seg {
-    flex: 1 1 0;
+    flex: 1 1 9rem;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -85,11 +88,18 @@
 
 /* ---- two columns: inputs left, answer right ---- */
 
+/* minmax(0, …) rather than a rem floor: a hard minimum makes the track refuse
+   to shrink and pushes the whole grid past its container instead. */
 .wsm-split {
     display: grid;
-    grid-template-columns: minmax(19rem, 5fr) minmax(22rem, 7fr);
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     gap: 12px;
     align-items: start;
+}
+
+.wsm-col-inputs,
+.wsm-col-results {
+    min-width: 0;
 }
 
 .wsm-panel {
@@ -115,10 +125,13 @@
     opacity: 0.45;
 }
 
+/* align-items:end keeps the two inputs on one line when one of the labels
+   wraps to two lines and the other does not. */
 .wsm-pair {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
+    align-items: end;
 }
 
 .wsm-field-off-note {
@@ -133,11 +146,55 @@
     font-size: 0.6875rem;
     line-height: 1.35;
     color: var(--lwc-colorTextWeak, #5c5c5c);
+    overflow-wrap: anywhere;
 }
 
-/* Tighten the button-group radios so ten token choices stay compact. */
-.wsm-chips {
-    --slds-c-radio-button-spacing-inline-start: 0;
+/* Hand-rolled chips instead of lightning-radio-group type="button": the SLDS
+   button group is one non-wrapping row, so ten token choices overflowed the
+   inputs column at every width. These wrap. */
+
+.wsm-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.wsm-chip-row_off {
+    opacity: 0.45;
+}
+
+.wsm-chip {
+    flex: 0 0 auto;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    line-height: 1.3;
+    font-variant-numeric: tabular-nums;
+    color: var(--lwc-colorTextDefault, #181818);
+    background: #ffffff;
+    border: 1px solid var(--lwc-colorBorder, #c9c9c9);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.wsm-chip:hover:not(:disabled) {
+    border-color: #0176d3;
+}
+
+.wsm-chip:focus-visible {
+    outline: 2px solid #0176d3;
+    outline-offset: 1px;
+}
+
+.wsm-chip_on {
+    background: #0176d3;
+    border-color: #0176d3;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.wsm-chip:disabled {
+    cursor: not-allowed;
 }
 
 /* ---- live formula ---- */
@@ -162,11 +219,18 @@
 }
 
 .wsm-formula-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-wrap: anywhere;
     font-size: 0.8125rem;
     font-weight: 600;
     color: var(--lwc-colorTextDefault, #181818);
     font-variant-numeric: tabular-nums;
     line-height: 1.35;
+}
+
+.wsm-formula-help {
+    flex: 0 0 auto;
 }
 
 @media (max-width: 1024px) {
@@ -176,11 +240,30 @@
 }
 
 @media (max-width: 768px) {
-    .wsm-bar-modes {
-        flex-wrap: wrap;
-    }
     .wsm-pair {
         grid-template-columns: 1fr;
+    }
+    /* One mode per row on phones — three across is unreadable. */
+    .wsm-seg {
+        flex: 1 1 100%;
+    }
+    .wsm-env,
+    .wsm-reset {
+        flex: 1 1 auto;
+    }
+}
+
+/* Salesforce mobile web leaves the component barely 240px wide. Give every
+   top-bar control its own full-width row so nothing has to shrink below its
+   intrinsic minimum and push the bar out. */
+@media (max-width: 480px) {
+    .wsm-env,
+    .wsm-reset {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+    .wsm-calc {
+        gap: 10px;
     }
 }
 
@@ -189,6 +272,7 @@
     line-height: 1.4;
     color: var(--lwc-colorTextWeak, #5c5c5c);
     padding: 0 2px;
+    overflow-wrap: anywhere;
 }
 
 .wsm-provenance a {

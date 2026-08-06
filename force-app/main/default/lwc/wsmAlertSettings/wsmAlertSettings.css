@@ -16,6 +16,7 @@
 
 .wsm-bar-title {
     flex: 1 1 20rem;
+    min-width: 0;
 }
 
 .wsm-title {
@@ -69,14 +70,17 @@
 
 /* ---- two columns: recipients wider, thresholds narrower ---- */
 
+/* minmax(0, …) rather than a rem floor: a hard minimum makes the track refuse
+   to shrink and pushes the whole grid past its container instead. */
 .wsm-split {
     display: grid;
-    grid-template-columns: minmax(24rem, 7fr) minmax(18rem, 5fr);
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
     gap: 12px;
     align-items: start;
 }
 
 .wsm-panel {
+    min-width: 0;
     background: var(--lwc-colorBackgroundAlt, #ffffff);
     border: 1px solid var(--lwc-colorBorder, #e5e5e5);
     border-radius: 8px;
@@ -86,6 +90,7 @@
 
 .wsm-panel-head {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 8px;
     margin-bottom: 8px;
@@ -103,6 +108,28 @@
     margin-left: auto;
     font-size: 0.6875rem;
     color: var(--lwc-colorTextWeak, #5c5c5c);
+}
+
+/* ---- datatables ----
+   Left to itself lightning-datatable crushes columns until the headers read
+   "N…" / "E…" / "S…". A min-width plus a scroller keeps the columns readable
+   and moves the compromise to a horizontal scroll, which only engages once the
+   panel is genuinely too narrow. Wide layouts are unaffected. */
+
+.wsm-dt {
+    overflow-x: auto;
+}
+
+.wsm-dt > lightning-datatable {
+    display: block;
+}
+
+.wsm-dt_recipients > lightning-datatable {
+    min-width: 34rem;
+}
+
+.wsm-dt_thresholds > lightning-datatable {
+    min-width: 24rem;
 }
 
 /* ---- inline add row ---- */

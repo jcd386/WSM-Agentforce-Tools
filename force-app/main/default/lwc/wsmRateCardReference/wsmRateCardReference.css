@@ -8,6 +8,7 @@
 
 .wsm-ref-toggle {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 8px;
     width: 100%;
@@ -44,6 +45,7 @@
 
 .wsm-ref-h {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 6px;
     font-size: 0.8125rem;
@@ -122,4 +124,57 @@
     border-top: 1px solid var(--lwc-colorBorder, #e5e5e5);
     font-size: 0.75rem;
     color: var(--lwc-colorTextWeak, #5c5c5c);
+    overflow-wrap: anywhere;
+}
+
+/* ---- model → tier table ---- */
+
+.wsm-ref-caution {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 8px 0;
+    padding: 8px 10px;
+    background: #fff5e6;
+    border: 1px solid #f5c98a;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: #8c4b00;
+}
+
+.wsm-ref-caution-sub {
+    margin-top: 4px;
+    color: #a06a2c;
+}
+
+.wsm-qualifier {
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 400;
+    color: var(--lwc-colorTextWeak, #5c5c5c);
+}
+
+.wsm-tier {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Provisional on purpose: a solid, confident badge would overstate what
+   Salesforce has actually published. */
+.wsm-tier_known {
+    background: #fff5e6;
+    border: 1px dashed #d9a441;
+    color: #8c4b00;
+}
+
+.wsm-tier_unknown {
+    background: #f3f3f3;
+    border: 1px solid #e0e0e0;
+    color: #706e6b;
+    font-weight: 400;
 }
