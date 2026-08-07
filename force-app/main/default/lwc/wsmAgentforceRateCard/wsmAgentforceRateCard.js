@@ -28,30 +28,6 @@ export const PRICING_SOURCE_URL = 'https://www.salesforce.com/agentforce/pricing
 export const LLM_SUPPORT_URL =
     'https://help.salesforce.com/s/articleView?id=ai.generative_ai_large_language_model_support.htm&type=5';
 
-/**
- * Model roster and tier history are deliberately TWO different facts with two
- * different provenance dates, because Salesforce publishes them separately:
- *
- *   MODEL_ROSTER_*  — which models Agentforce supports. Currently published,
- *                     verified against the developer guide. Has NO tier column.
- *   TIER_HISTORY_*  — the last time Salesforce published which model sits in
- *                     which prompt tier. That was the Oct 2025 migration FAQ,
- *                     whose multipliers (4/4/10/38) have SINCE BEEN REPLACED by
- *                     the current card's 2/2/4/16. Because a tier change is
- *                     itself published as a multiplier change, a model may have
- *                     moved tiers in that same revision. Treat every tier below
- *                     as last-known, not current.
- *
- * Never merge these two into one "current mapping" — that is the fabrication
- * this split exists to prevent.
- */
-export const MODEL_ROSTER_URL =
-    'https://developer.salesforce.com/docs/ai/agentforce/guide/supported-models.html';
-export const MODEL_ROSTER_VERIFIED = '2026-08-06';
-export const TIER_HISTORY_URL =
-    'https://help.salesforce.com/s/articleView?id=005197697&type=1';
-export const TIER_HISTORY_DATE = '2025-10-24';
-
 export const TOKENS_PER_CREDIT_BLOCK = 2000;
 export const LIST_PRICE_PER_100K = 500;
 export const CREDITS_PER_PACK = 100000;
@@ -66,77 +42,12 @@ export const PROMPT_TIERS = [
 ];
 
 /**
- * Models Agentforce supports today, grouped the way the developer guide groups
- * them. `lastTier` is the tier Salesforce published for that model in the Oct
- * 2025 migration FAQ — null means Salesforce has never published a tier for it
- * (mostly models released after that FAQ). Do not infer a tier from a sibling
- * model's tier; "Mini" is not reliably Basic just because another Mini was.
+ * Deliberately NOT modelled here: which model sits in which prompt tier.
+ * Salesforce publishes that on the Large Language Model Support page
+ * (LLM_SUPPORT_URL) and revises it as models ship and get deprecated. Any copy
+ * kept in this file goes stale silently and would be quoted to a customer as
+ * fact. The UI links to that page instead — do not reintroduce a local list.
  */
-export const SUPPORTED_MODELS = [
-    { key: 'novaLite', provider: 'Amazon (Bedrock)', label: 'Nova Lite', lastTier: 'Basic' },
-    { key: 'novaPro', provider: 'Amazon (Bedrock)', label: 'Nova Pro', lastTier: 'Standard' },
-
-    { key: 'haiku45', provider: 'Anthropic (Bedrock)', label: 'Claude Haiku 4.5', lastTier: null },
-    { key: 'opus45', provider: 'Anthropic (Bedrock)', label: 'Claude Opus 4.5', lastTier: null },
-
-    {
-        key: 'nemotron',
-        provider: 'NVIDIA (Bedrock)',
-        label: 'Nemotron 3 Nano 30B',
-        lastTier: null,
-        note: 'Beta'
-    },
-
-    { key: 'gpt4o', provider: 'OpenAI / Azure OpenAI', label: 'GPT-4o', lastTier: 'Standard' },
-    { key: 'gpt4oMini', provider: 'OpenAI / Azure OpenAI', label: 'GPT-4o mini', lastTier: 'Basic' },
-    { key: 'gpt41', provider: 'OpenAI / Azure OpenAI', label: 'GPT-4.1', lastTier: 'Standard' },
-    { key: 'gpt41Mini', provider: 'OpenAI / Azure OpenAI', label: 'GPT-4.1 Mini', lastTier: 'Basic' },
-    { key: 'gpt5', provider: 'OpenAI / Azure OpenAI', label: 'GPT-5', lastTier: 'Standard' },
-    { key: 'gpt5Mini', provider: 'OpenAI / Azure OpenAI', label: 'GPT-5 Mini', lastTier: 'Basic' },
-    { key: 'gpt51', provider: 'OpenAI / Azure OpenAI', label: 'GPT-5.1', lastTier: null },
-    { key: 'gpt52', provider: 'OpenAI / Azure OpenAI', label: 'GPT-5.2', lastTier: null },
-    { key: 'gpt54', provider: 'OpenAI / Azure OpenAI', label: 'GPT-5.4', lastTier: null },
-    { key: 'o3', provider: 'OpenAI / Azure OpenAI', label: 'O3', lastTier: 'Standard' },
-    { key: 'o4Mini', provider: 'OpenAI / Azure OpenAI', label: 'O4 Mini', lastTier: 'Standard' },
-    {
-        key: 'ada002',
-        provider: 'OpenAI / Azure OpenAI',
-        label: 'Ada 002',
-        lastTier: null,
-        note: 'Embeddings, not prompts'
-    },
-
-    { key: 'gem25Flash', provider: 'Google (Vertex AI)', label: 'Gemini 2.5 Flash', lastTier: 'Basic' },
-    {
-        key: 'gem25FlashLite',
-        provider: 'Google (Vertex AI)',
-        label: 'Gemini 2.5 Flash Lite',
-        lastTier: null
-    },
-    { key: 'gem25Pro', provider: 'Google (Vertex AI)', label: 'Gemini 2.5 Pro', lastTier: 'Standard' },
-    { key: 'gem3Flash', provider: 'Google (Vertex AI)', label: 'Gemini 3 Flash', lastTier: null },
-    {
-        key: 'gem3Pro',
-        provider: 'Google (Vertex AI)',
-        label: 'Gemini 3 Pro',
-        lastTier: null,
-        note: 'Beta'
-    },
-    {
-        key: 'gem31FlashLite',
-        provider: 'Google (Vertex AI)',
-        label: 'Gemini 3.1 Flash Lite',
-        lastTier: null,
-        note: 'Beta'
-    },
-    {
-        key: 'gem31Pro',
-        provider: 'Google (Vertex AI)',
-        label: 'Gemini 3.1 Pro',
-        lastTier: null,
-        note: 'Beta'
-    }
-];
 
 /**
  * Flat per event. credits = fixed rate per execution, regardless of token count.

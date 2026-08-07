@@ -75,10 +75,19 @@
 
 .wsm-mini-label {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 4px;
     font-size: 0.75rem;
     color: var(--lwc-colorTextWeak, #5c5c5c);
+}
+
+/* Points at Salesforce's live model list. Deliberately a link and not a local
+   table — the mapping changes as models ship and a copy would go stale. */
+.wsm-tier-link {
+    margin-left: 2px;
+    color: #0b5cab;
+    text-decoration: underline;
 }
 
 .wsm-reset {

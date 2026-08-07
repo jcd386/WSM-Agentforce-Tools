@@ -13,6 +13,7 @@ import {
     RATES_VERIFIED,
     RATE_CARD_SOURCE_URL,
     PRICING_SOURCE_URL,
+    LLM_SUPPORT_URL,
     discountPercent,
     priceFromDiscount,
     toNumber,
@@ -74,6 +75,7 @@ export default class WsmCreditCalculator extends LightningElement {
     ratesVerified = RATES_VERIFIED;
     rateCardSourceUrl = RATE_CARD_SOURCE_URL;
     pricingSourceUrl = PRICING_SOURCE_URL;
+    llmSupportUrl = LLM_SUPPORT_URL;
 
     mode = 'token';
     environment = 'prod';
@@ -176,9 +178,9 @@ export default class WsmCreditCalculator extends LightningElement {
             `The tier is the level of AI model the prompt uses. A higher tier is smarter but ` +
             `uses more credits for the same amount of text. The × number is the multiplier in ` +
             `the math: ${tiers}. Example: 4,000 tokens on Standard (4×) is 4,000 ÷ 2,000 × 4 = 8 ` +
-            `credits. Starter means a model you bring yourself. To see which model sits in which ` +
-            `tier, open "Show the full price list" below — but read the warning there first, ` +
-            `because Salesforce has not kept that list up to date.`
+            `credits. Starter means a model you bring yourself; the other three are models ` +
+            `Salesforce runs for you. Salesforce moves models between tiers as new ones ship, so ` +
+            `use the link next to this label to check the current list rather than trusting a copy.`
         );
     }
 
